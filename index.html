@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<!--
+  Strade Perdute · Pubblica recensione
+  Versione 1.3 — 30 settembre 2026
+  Da questa versione ogni modifica incrementa il numero (1.1, 1.2, …)
+  e viene annotata qui.
+  1.3 — «Messaggio alla redazione» in testa all’app: la nota sulle nuove
+        regole SEO, aperta alla prima visita di ogni versione.
+  1.2 — pronta per la pubblicazione online: la pagina chiede ai motori di
+        ricerca di non essere indicizzata (noindex).
+  1.1 — container identici agli articoli pubblicati (trailer come colonna
+        nel secondo container, come nella recensione di Ozon); scelta tra
+        trailer italiano e ufficiale (italiano predefinito se c'è, da Wikidata);
+        scheda tecnica visibile / richiudibile / discreta.
+  1.0 — prima versione stabile: importazione da Google Doc/Word/PDF/testo,
+        rilevamento titolo e regista dal testo, dati film da IMDb/Wikidata/iTunes,
+        fino a 6 proposte di immagine (formato 768×539), riassunto «da vetrina»,
+        previsione SEO calibrata, salvataggio lavoro in corso, aggiorna bozza,
+        controllo doppioni, eliminazione bozza di prova.
+-->
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Strade Perdute · Pubblica recensione</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&display=swap">
+<style>
+:root{--ink:#211f1c;--mut:#75726a;--acc:#8a2d1f;--acc2:#a8402f;--ok:#2f6b3a;--warn:#a97507;--err:#a02020;--bg:#f3f1ea;--card:#fffdf8;--line:#ddd9cf;--soft:#eceadf}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Sora',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:14.5px;line-height:1.5}
+.top{background:var(--ink);color:#f5f3ee;padding:26px 16px 22px}
+.top .in{max-width:900px;margin:0 auto}
+.wordmark{font-weight:300;font-size:27px;letter-spacing:.05em}
+.wordmark b{font-weight:600}
+.top .sub{color:#b9b5ac;font-size:13.5px;margin-top:8px;max-width:75ch}
+.top .sub b{color:#fff;font-weight:600}
+.wrap{max-width:900px;margin:0 auto;padding:24px 16px 90px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:18px;box-shadow:0 1px 3px rgba(40,35,25,.05)}
+.card h2{font-size:15.5px;font-weight:600;margin:0 0 12px;color:var(--ink);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.card h2 .n{flex:0 0 auto;background:var(--acc);color:#fff;border-radius:50%;width:24px;height:24px;text-align:center;line-height:24px;font-size:12.5px;font-weight:600}
+.card.done h2 .n{background:var(--ok)}
+label{display:block;font-size:12.5px;color:var(--mut);margin:12px 0 4px}
+input[type=text],input[type=password],input[type=url],textarea,select{width:100%;padding:9px 11px;border:1.5px solid var(--line);border-radius:8px;font:inherit;font-size:13.5px;background:#fff;transition:border-color .15s,box-shadow .15s}
+input:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(138,45,31,.08)}
+textarea{min-height:95px;resize:vertical;line-height:1.45}
+button{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:10px 18px;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;margin-top:12px;transition:background .15s}
+button:hover{background:var(--acc2)}
+button.sec{background:transparent;color:var(--acc);border:1.5px solid var(--acc)}
+button.sec:hover{background:rgba(138,45,31,.06)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:14px;flex-wrap:wrap}.row>div{flex:1;min-width:180px}
+.msg{margin-top:10px;font-size:13px;border-radius:8px;padding:9px 12px;display:none}
+.msg.ok{display:block;background:#e8f2ea;color:var(--ok)}
+.msg.err{display:block;background:#f7e5e5;color:var(--err)}
+.msg.warn{display:block;background:#f7efd9;color:var(--warn)}
+.hint{font-size:12.5px;color:var(--mut);margin-top:6px}
+.hint a{color:var(--acc)}
+.paste{border:1.5px dashed var(--line);border-radius:10px;min-height:120px;max-height:300px;overflow:auto;padding:12px;background:#fff;font-size:13.5px}
+.paste:empty:before{content:"\2026oppure incolla qui il testo copiato dal documento (i corsivi si conservano)";color:#aaa}
+#parList{max-height:460px;overflow:auto;padding-right:4px}
+.blkhead{font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--mut);margin:12px 2px 6px;text-transform:uppercase}
+.pv{background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin-bottom:6px;display:flex;gap:12px;align-items:flex-start}
+.pv .txt{flex:1;font-size:13px;color:#3a3833;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+.pv .txt.open{-webkit-line-clamp:unset}
+.pv select{width:auto;font-size:12px;padding:4px 6px;flex:0 0 auto}
+.sep{display:flex;align-items:center;gap:10px;margin:4px 0;cursor:pointer;color:var(--mut);font-size:11.5px;opacity:.5;user-select:none}
+.sep:hover{opacity:1;color:var(--acc)}
+.sep .ln{flex:1;border-top:1.5px dashed currentColor}
+.sep.on{opacity:1;color:#fff;background:var(--acc);border-radius:8px;padding:8px 14px;font-weight:600;font-size:12.5px;margin:8px 0;cursor:default}
+.sep.on .ln{border-top:1.5px solid rgba(255,255,255,.35)}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;font-size:13px}
+.checks div:before{content:"\2715  ";color:var(--err);font-weight:700}
+.checks div.pass:before{content:"\2713  ";color:var(--ok)}
+#log{font-family:ui-monospace,monospace;font-size:12.5px;background:#20201e;color:#ddd;border-radius:10px;padding:12px;max-height:260px;overflow:auto;display:none;white-space:pre-wrap;margin-top:12px}
+.imgprev{max-width:100%;max-height:220px;border-radius:8px;border:1px solid var(--line);margin-top:8px;display:none}
+.cands{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
+.cand{border:2.5px solid var(--line);border-radius:12px;padding:7px;cursor:pointer;width:200px;text-align:center;background:#fff;transition:border-color .15s,transform .1s}
+.cand:hover{transform:translateY(-2px)}
+.cand.sel{border-color:var(--acc);box-shadow:0 3px 10px rgba(138,45,31,.18)}
+.cand.sel .cl:before{content:"\2713 scelta \00b7 ";color:var(--ok);font-weight:700}
+.cand img{max-width:100%;max-height:150px;border-radius:7px;display:block;margin:0 auto}
+.cand .cl{font-size:11px;color:var(--mut);margin-top:5px}
+.badge{font-size:11px;background:var(--soft);border:1px solid var(--line);border-radius:5px;padding:2px 7px;color:var(--mut);font-weight:400}
+.auto{font-size:11px;color:var(--ok);display:none;font-weight:400}
+.predict{margin-top:14px;font-size:14px;border-top:1px solid var(--line);padding-top:12px}
+.predict b{font-size:24px;color:var(--acc)}
+.final a{color:var(--acc);font-weight:600}
+.final{margin-top:10px}
+ul.todo{margin:8px 0 0 18px;padding:0}
+ul.todo li{margin-bottom:4px;font-size:13.5px}
+
+.nota{padding:0;overflow:hidden}
+.nota>summary{list-style:none;cursor:pointer;padding:16px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.nota>summary::-webkit-details-marker{display:none}
+.nota>summary .k{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--acc)}
+.nota>summary .t{font-weight:600;font-size:15px;flex:1;min-width:220px}
+.nota>summary .o{font-size:12.5px;color:var(--acc);font-weight:600;white-space:nowrap}
+.nota[open]>summary .o{font-size:0}.nota[open]>summary .o:after{content:"chiudi \25B4";font-size:12.5px}
+.nota:not([open])>summary .o:after{content:" \25BE"}
+.nota .nb{padding:0 22px 22px;border-top:1px solid var(--line);font-size:14px;line-height:1.55}
+.nota .nb .lede{color:var(--mut);font-size:14.5px;margin:14px 0 6px}
+.nota .nb .meta{font-size:12.5px;color:var(--mut);border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:10px}
+.nota .nb h2{font-size:15.5px;font-weight:600;margin:24px 0 10px}
+.nota .nb h2 .num{color:var(--acc);margin-right:8px;font-weight:700}
+.nota .nb p,.nota .nb ul{max-width:70ch}
+.nota .score{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:12px 0}
+.nota .score div{flex:1;padding:10px 14px;background:#fff}
+.nota .score div+div{border-left:1px solid var(--line)}
+.nota .score b{font-size:19px;display:block;font-variant-numeric:tabular-nums}
+.nota .score span{font-size:11.5px;color:var(--mut)}
+.nota .score .last b{color:var(--acc)}
+.nota .tblwrap{overflow-x:auto}
+.nota table{border-collapse:collapse;width:100%;font-size:13px;margin:10px 0}
+.nota th{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;text-align:left;color:var(--mut);font-weight:600;padding:7px 9px;border-bottom:2px solid var(--ink)}
+.nota td{padding:8px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+.nota td.si{color:var(--ok);font-weight:600;white-space:nowrap}
+.nota td.no{color:var(--acc);font-weight:600;white-space:nowrap}
+.nota .note{background:var(--soft);border-left:3px solid var(--acc);border-radius:0 8px 8px 0;padding:10px 14px;font-size:13.5px;margin:12px 0;max-width:70ch}
+.nota ul{padding-left:20px}
+.nota li{margin-bottom:6px}
+.nota li::marker{color:var(--acc)}
+.nota .step{display:flex;gap:12px;margin-bottom:10px;max-width:72ch}
+.nota .step .sn{font-weight:700;color:var(--acc);min-width:18px;text-align:right}
+.nota .foot{margin-top:24px;padding-top:12px;border-top:1px solid var(--line);font-size:12px;color:var(--mut)}
+@media (max-width:520px){.nota .score{flex-direction:column}.nota .score div+div{border-left:0;border-top:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<div class="top"><div class="in">
+<div class="wordmark">strade perdute <b>· pubblica recensione</b> <span style="font-size:12px;font-weight:400;color:#b9b5ac;letter-spacing:.08em;vertical-align:middle">v 1.3</span></div>
+<div class="sub">Ti servono solo <b>le tue credenziali</b> e <b>la recensione</b> (link o file): dati del film, immagini e SEO vengono cercati in rete e compilati da soli — a te resta il controllo. Viene creata una <b>bozza</b>: nulla è pubblicato.</div>
+</div></div>
+<div class="wrap">
+
+<details class="card nota" id="nota">
+<summary><span class="k">Messaggio alla redazione</span><span class="t">Come cambia la scrittura SEO delle recensioni</span><span class="o">leggi</span></summary>
+<div class="nb">
+<p class="lede">Le norme della «Guida al Blog e alla scrittura SEO» restano tutte valide. Questa nota documenta i passaggi aggiunti sopra di esse, provati sulla recensione di <i>Chat Chat Show</i> di Xavier Tesson, e ora incorporati nell'app di caricamento per i redattori.</p>
+<div class="meta">28 settembre 2026 · caso di prova: <i>Chat Chat Show</i> (bozza) · campione di confronto: 4 recensioni pubblicate a settembre 2026</div>
+
+<h2><span class="num">1</span>Il risultato sul caso di prova</h2>
+<div class="score">
+  <div><b>58 / 100</b><span>Rank Math seguendo solo la guida attuale</span></div>
+  <div><b>74 / 100</b><span>con scheda tecnica, link e metadati</span></div>
+  <div class="last"><b>75 / 100</b><span>con seconda immagine e ritocchi</span></div>
+</div>
+<p>La soglia della guida (55) era già superata; il salto vero lo hanno prodotto quattro elementi meccanici che la guida non prevede: la scheda tecnica con link a IMDb, i link interni, la meta descrizione e l'alt dell'immagine con la parola chiave. I ritocchi al testo hanno inciso poco sul punteggio: il testo resta dell'autore.</p>
+
+<h2><span class="num">2</span>I passaggi nuovi, in aggiunta alla guida</h2>
+<div class="step"><span class="sn">1</span><div><b>Scheda tecnica in coda all'articolo</b>, con sottotitolo H3 «Scheda tecnica di <i>Titolo</i>»: anno, durata, regia, interpreti, e il titolo del film linkato alla sua pagina IMDb. Da sola risolve tre controlli di Rank Math (parola chiave in un sottotitolo, link esterno, link DoFollow). Può essere visibile (predefinito), richiudibile al clic o discreta in grigio: tutte e tre valgono per la SEO. Mai invisibile (testo dello stesso colore dello sfondo): Google lo tratta come testo nascosto e può penalizzare l'intero sito.</div></div>
+<div class="step"><span class="sn">2</span><div><b>«Leggi anche»</b> sotto la scheda: uno o due link ad articoli affini della rivista. Vale anche al contrario: quando esce una recensione nuova, aggiungere un link verso di essa da un articolo già ben letto.</div></div>
+<div class="step"><span class="sn">3</span><div><b>Titolo SEO e meta descrizione scritti a mano</b> nel riquadro Rank Math: titolo con la parola chiave in testa e l'anno tra parentesi — es. «Chat Chat Show (2026): recensione del film» — e descrizione di 120–158 caratteri che contiene la parola chiave. Il titolo sul sito resta nella forma della guida, «Titolo del film di Autore».</div></div>
+<div class="step"><span class="sn">4</span><div><b>Riassunto (excerpt) in stile vetrina</b>, sui 200–230 caratteri: due o tre parole-tema, poi una frase di giudizio che contiene il titolo del film — es. «Verità, estetica. Europa Centrale è un film ambizioso…». È il testo che accompagna le anteprime sui social e in home.</div></div>
+<div class="step"><span class="sn">5</span><div><b>Un fotogramma anche dentro il testo</b>, oltre all'immagine in evidenza, con alt e didascalia «Titolo di Autore». Risolve il controllo «rich media». Se il trailer non è ancora disponibile, il fotogramma prende il suo posto tra i due blocchi.</div></div>
+<div class="step"><span class="sn">6</span><div><b>Titolo del film ripetuto 5–6 volte</b> nel corpo (densità ~0,5%), in punti naturali: la guida chiede solo che compaia nelle prime due righe. Nessuna riscrittura: al massimo un «il film» diventa il titolo.</div></div>
+
+<h2><span class="num">3</span>Dove ci si discosta dalla guida</h2>
+<ul>
+<li><b>Trailer non più bloccante.</b> La guida lo dà per obbligatorio tra i due paragrafi; se non esiste ancora, si pubblica con il secondo fotogramma al suo posto e si aggiunge il trailer appena esce.</li>
+<li><b>Punteggio SEO: obiettivo 70+, non 55+.</b> La soglia 55 resta il minimo, ma con i passaggi qui sopra si arriva a 70–75 senza toccare la prosa.</li>
+<li>Tutto il resto della guida è confermato: titolo «Film di Autore», due blocchi di testo, categoria, tag solo titolo e autore, regista e interpreti indicizzati, immagine 200–500 KB con testo alternativo, titolo e didascalia, permalink con titolo e autore, parola chiave = titolo del film, salvataggio <b>in bozza</b>.</li>
+</ul>
+
+<h2><span class="num">4</span>Confronto con la prassi attuale</h2>
+<p>Campione: le quattro recensioni più recenti di altri autori (settembre 2026: <i>The Invite</i>, <i>I figli della scimmia</i>, <i>The Echo Chamber</i>, <i>M – il mostro di Düsseldorf</i>).</p>
+<div class="tblwrap">
+<table>
+<tr><th>Pratica</th><th>Campione attuale</th><th>Nuova indicazione</th></tr>
+<tr><td>Trailer tra i due blocchi</td><td class="si">4 su 4</td><td>Confermata (o fotogramma se manca)</td></tr>
+<tr><td>Meta descrizione presente</td><td class="si">4 su 4</td><td>Confermata; con parola chiave in testa</td></tr>
+<tr><td>Almeno 600 parole</td><td class="no">3 su 4</td><td>Da verificare prima del caricamento (una era a ~490)</td></tr>
+<tr><td>Scheda tecnica con link IMDb</td><td class="no">0 su 4</td><td><b>Nuova</b></td></tr>
+<tr><td>Link esterni nel testo</td><td class="no">0 su 4</td><td><b>Nuova</b> (via scheda tecnica)</td></tr>
+<tr><td>Link interni «Leggi anche»</td><td class="no">1 link in 4 articoli</td><td><b>Nuova</b>: 1–2 per articolo</td></tr>
+<tr><td>Immagini dentro il testo</td><td class="no">0 su 4</td><td><b>Nuova</b>: un fotogramma nel corpo</td></tr>
+<tr><td>Titolo SEO personalizzato</td><td class="no">0 su 4 (titolo predefinito)</td><td><b>Nuova</b>: con anno e «recensione»</td></tr>
+</table>
+</div>
+
+<h2><span class="num">5</span>L'app per i redattori</h2>
+<p>I passaggi qui sopra sono automatizzati in questa app («Strade Perdute · Pubblica recensione»). All'autore servono solo due cose: le proprie credenziali — una <b>Application Password</b> creata dal proprio profilo WordPress, revocabile in ogni momento; mai la password dell'account — e la recensione, come link a un Google Doc, file Word o PDF, o testo incollato. Tutto il resto viene compilato da solo:</p>
+<ul>
+<li>titolo del film e regista letti dalla prima riga, o rilevati dal testo se la prima riga manca; testo diviso nei due blocchi, con corsivi e allineamenti conservati (dal PDF i corsivi sono ricostruiti e vanno ricontrollati);</li>
+<li>anno, interpreti, durata e pagina IMDb recuperati automaticamente da IMDb, Wikidata e iTunes; trailer italiano o ufficiale (l'italiano è predefinito quando esiste); per l'immagine in evidenza fino a sei proposte (locandine e fotogrammi da IMDb, Wikipedia, iTunes e dal trailer) tra cui l'autore sceglie con un clic, o sostituisce con un proprio file — ogni immagine è ritagliata delle bande nere, portata al formato del tema 768×539 e tra 200 e 500 KB, con alt, titolo e didascalia;</li>
+<li>scheda tecnica, «Leggi anche» proposti tra gli articoli del sito, permalink, tag, categoria, riassunto, titolo SEO e meta descrizione generati da soli, con una checklist di verifiche prima dell'invio: l'autore controlla e corregge solo dove serve;</li>
+<li>viene creata la <b>bozza</b> (mai una pubblicazione), con il riepilogo di ciò che resta da fare a mano.</li>
+</ul>
+<div class="note">Restano sempre manuali: la rilettura delle frasi generate (meta descrizione e riassunto), il controllo del punteggio Rank Math nella bozza, l'inserimento del trailer se assente, l'eventuale selezione di regista e interpreti quando l'API non li accetta, e la revisione redazionale prima della pubblicazione.</div>
+<div class="note"><b>Editor di WordPress:</b> aprendo la bozza, la scheda «Visuale» mostra righe grigie come <i>[fusion_builder_container…]</i>: sono la struttura del tema Avada, invisibile sul sito — non vanno toccate né eliminate. Per ritocchi al testo usare la scheda «Codice» o il Live Builder; salvare dalla Visuale può scartare modifiche fatte altrove.</div>
+
+<div class="foot">Preparato con il caporedattore a partire dalla lavorazione di <i>Chat Chat Show</i> · La «Guida al Blog e alla scrittura SEO» resta il riferimento per i passaggi di base.</div>
+</div>
+</details>
+<!-- 1 CREDENZIALI -->
+<div class="card">
+<h2><span class="n">1</span>Accesso</h2>
+<div class="row">
+<div><label>Sito</label><input type="url" id="site" value="https://stradeperdute.it"></div>
+<div><label>Nome utente WordPress</label><input type="text" id="user" autocomplete="username"></div>
+<div><label>Application Password</label><input type="password" id="pass" autocomplete="off" placeholder="xxxx xxxx xxxx xxxx xxxx xxxx"></div>
+</div>
+<div class="hint">Non usare la password del tuo account: crea una <b>Application Password</b> dal tuo Profilo WordPress (wp-admin → Profilo → «Application Passwords», nome a piacere, poi «Aggiungi»). Puoi revocarla in ogni momento. Le credenziali restano in questa pagina e vengono inviate solo al sito indicato qui sopra.</div>
+<button id="btnLogin">Verifica accesso</button>
+<div class="msg" id="mLogin"></div>
+</div>
+
+<!-- 2 TESTO -->
+<div class="card">
+<h2><span class="n">2</span>Recensione</h2>
+<div class="row">
+<div><label>Link al Google Doc (condiviso «chiunque abbia il link»)</label><input type="url" id="gdoc" placeholder="https://docs.google.com/document/d/…"></div>
+<div style="flex:0"><label>&nbsp;</label><button class="sec" id="btnGdoc" style="margin-top:0">Importa</button></div>
+</div>
+<label>Oppure carica un file (Word .docx, PDF, testo)</label>
+<input type="file" id="docfile" accept=".docx,.doc,.pdf,.txt,.html,.htm">
+<div class="hint">Dal Word i corsivi si conservano; dal PDF vengono ricostruiti ma vanno ricontrollati. Con un vecchio .doc: salvalo come .docx oppure incolla il testo. La prima riga deve essere il titolo nella forma <b>«Titolo del film di Regista»</b>.</div>
+<label>Anteprima / incolla</label>
+<div class="paste" id="paste" contenteditable="true"></div>
+<button id="btnParse">Leggi il testo e compila tutto</button>
+<div class="msg" id="mParse"></div>
+</div>
+
+<!-- 3 DATI FILM -->
+<div class="card">
+<h2><span class="n">3</span>Dati del film <span class="auto" id="a3">compilati automaticamente — controlla</span></h2>
+<div class="row">
+<div><label>Titolo del film</label><input type="text" id="film"></div>
+<div><label>Regista</label><input type="text" id="regista"></div>
+<div><label>Anno</label><input type="text" id="anno" placeholder="2026"></div>
+<div><label>Durata</label><input type="text" id="durata" placeholder="84'"></div>
+</div>
+<div class="row">
+<div><label>Interpreti principali (separati da virgola)</label><input type="text" id="cast"></div>
+<div><label>Pagina IMDb del film (per la scheda tecnica)</label><input type="url" id="imdb" placeholder="https://www.imdb.com/title/tt…"></div>
+</div>
+<div class="row">
+<div><label>Trailer da inserire</label>
+<select id="trailerSel"><option value="it">Trailer italiano</option><option value="orig">Trailer ufficiale (lingua originale)</option></select>
+<input type="hidden" id="trailer">
+<div class="row" style="gap:8px;margin-top:6px">
+<div><input type="text" id="trailerIt" placeholder="Trailer italiano: https://www.youtube.com/watch?v=…"><div class="hint"><a id="ytSearchIt" href="https://www.youtube.com" target="_blank" rel="noopener">cerca il trailer italiano ↗</a></div></div>
+<div><input type="text" id="trailerOrig" placeholder="Trailer ufficiale: https://www.youtube.com/watch?v=…"><div class="hint"><a id="ytSearchOrig" href="https://www.youtube.com" target="_blank" rel="noopener">cerca il trailer ufficiale ↗</a></div></div>
+</div>
+<div class="hint">Cercati su Wikidata quando registrati. Se c'è il trailer italiano è scelto in automatico; altrimenti si usa quello ufficiale.</div></div>
+<div><label>Permalink (generato)</label><input type="text" id="slug"></div>
+</div>
+<label>Scheda tecnica in fondo all'articolo</label>
+<select id="schedaMode" style="width:auto"><option value="visibile">Visibile (predefinita)</option><option value="richiudibile">Richiudibile — si apre al clic su «Scheda tecnica»</option><option value="discreta">Discreta — carattere piccolo e grigio</option></select>
+<div class="hint">Tutte e tre le forme contano per la SEO. Non è prevista una scheda invisibile (testo dello stesso colore dello sfondo): Google la considera testo nascosto e può penalizzare l'intero sito.</div>
+<label>«Leggi anche» — proposti automaticamente dal sito, correggibili</label>
+<div class="row"><div><input type="url" id="la1u" placeholder="URL articolo 1"></div><div><input type="text" id="la1t" placeholder="Titolo da mostrare"></div></div>
+<div class="row"><div><input type="url" id="la2u" placeholder="URL articolo 2"></div><div><input type="text" id="la2t" placeholder="Titolo da mostrare"></div></div>
+<button class="sec" id="btnAuto">Compila automaticamente (dati, immagini, SEO)</button>
+<div class="msg" id="mAuto"></div>
+<div class="hint">Questo bottone rifà la ricerca in rete: utile se hai corretto titolo o regista, o se la prima compilazione non era riuscita.</div>
+</div>
+
+<!-- 4 STRUTTURA -->
+<div class="card">
+<h2><span class="n">4</span>Struttura <span class="badge">titolo articolo: <span id="prevTitle">—</span></span></h2>
+<div class="hint" style="margin-bottom:8px">L'articolo esce in <b>due blocchi</b> con il trailer (o la seconda immagine) in mezzo. La <b>barra rossa</b> mostra dove: per spostarla clicca su un'altra linea tratteggiata «sposta qui». Clicca un paragrafo per leggerlo per intero; il menu a lato corregge l'allineamento di epigrafi e versi.</div>
+<div id="parList"></div>
+</div>
+
+<!-- 5 IMMAGINI -->
+<div class="card">
+<h2><span class="n">5</span>Immagini <span class="auto" id="a5">proposte trovate in rete — clicca per scegliere</span></h2>
+<label>Immagine in evidenza — clicca su una proposta per sceglierla, oppure carica un tuo file</label>
+<div class="cands" id="cands"></div>
+<input type="file" id="img1" accept="image/*"><div class="hint" id="img1i"></div>
+<div class="row" style="margin-top:14px">
+<div>
+<label>Seconda immagine nel testo (consigliata: risolve il controllo «rich media»)</label>
+<input type="file" id="img2" accept="image/*"><img class="imgprev" id="img2p"><div class="hint" id="img2i"></div>
+</div>
+</div>
+<div class="hint">Le proposte arrivano da IMDb, Wikipedia/Wikidata e dalla miniatura del trailer; un file caricato si aggiunge come proposta e viene selezionato. Ogni proposta per l'immagine in evidenza viene ritagliata delle bande nere, portata al formato del tema (768×539) e tra 200 e 500 KB; alt, titolo e didascalia vengono impostati su «Titolo del film di Regista».</div>
+<div class="hint"><b>Diritti:</b> fotogrammi e locandine sono materiali promozionali dei distributori, usati a corredo di critica secondo la prassi editoriale. Quando disponibili, preferisci i materiali stampa ufficiali (cartella stampa del distributore o del festival); in caso di richiesta del titolare, l'immagine va sostituita o rimossa.</div>
+</div>
+
+<!-- 6 SEO -->
+<div class="card">
+<h2><span class="n">6</span>SEO <span class="auto" id="a6">generato con regole automatiche (non IA) — da ricontrollare</span></h2>
+<div class="row">
+<div><label>Parola chiave (= titolo del film)</label><input type="text" id="kw"></div>
+<div><label>Titolo SEO (solo per Google) <span class="badge" id="stLen"></span></label><input type="text" id="seoTitle"></div>
+</div>
+<label>Meta descrizione <span class="badge" id="mdLen"></span></label>
+<textarea id="metaDesc"></textarea>
+<label>Riassunto (excerpt: la vetrina dell'articolo — parole-tema e giudizio, con il titolo del film)</label>
+<textarea id="excerpt"></textarea>
+<div class="hint">⚠ Proposta generata con regole automatiche, <b>non da un'intelligenza artificiale</b>: monta frasi prese dalla recensione. Va sempre riletta e, se serve, riscritta prima di creare la bozza.</div>
+<button class="sec" id="btnCheck">Aggiorna verifiche</button>
+<div class="checks" id="checks" style="margin-top:10px"></div>
+<div class="predict" id="predict"></div>
+</div>
+
+<!-- 7 CREA -->
+<div class="card">
+<h2><span class="n">7</span>Crea la bozza</h2>
+<label>Destinazione</label>
+<div class="row">
+<div style="flex:0 0 auto"><select id="dest" style="width:auto"><option value="new">Nuova bozza</option><option value="upd">Aggiorna una mia bozza…</option></select></div>
+<div><select id="selDraft" style="display:none"></select></div>
+</div>
+<div class="hint" id="destHint" style="display:none">L'aggiornamento sovrascrive testo, titolo, immagine in evidenza, tag e campi SEO della bozza scelta con quanto preparato qui sopra. Permalink e ID restano gli stessi, e WordPress conserva le revisioni precedenti nello storico.</div>
+<button id="btnGo">Crea bozza su Strade Perdute</button>
+<div id="log"></div>
+<div class="msg" id="mGo"></div>
+<div class="final" id="final"></div>
+</div>
+</div>
+
+<script>
+"use strict";
+const APP_VERSION='1.3';
+/* ---------- costanti markup Avada / Sora ---------- */
+const SP='<span style="font-weight: 300; font-family: Sora;" data-fusion-font="true" data-fusion-google-font="Sora" data-fusion-google-variant="300">';
+
+/* modello esatto dei container (dalla recensione di Ozon, stradeperdute.it) */
+const TPL={"A": "[fusion_builder_container type=\"flex\" hundred_percent=\"no\" hundred_percent_height=\"no\" hundred_percent_height_scroll=\"no\" align_content=\"stretch\" flex_align_items=\"flex-start\" flex_justify_content=\"flex-start\" flex_wrap=\"wrap\" hundred_percent_height_center_content=\"yes\" equal_height_columns=\"no\" container_tag=\"div\" hide_on_mobile=\"small-visibility,medium-visibility,large-visibility\" status=\"published\" padding_right_small=\"0px\" padding_left_small=\"0px\" border_style=\"solid\" box_shadow=\"no\" box_shadow_blur=\"0\" box_shadow_spread=\"0\" gradient_start_position=\"0\" gradient_end_position=\"100\" gradient_type=\"linear\" radial_direction=\"center center\" linear_angle=\"180\" background_position=\"center center\" background_repeat=\"no-repeat\" fade=\"no\" background_parallax=\"none\" enable_mobile=\"no\" parallax_speed=\"0.3\" background_blend_mode=\"none\" background_slider_skip_lazy_loading=\"no\" background_slider_loop=\"yes\" background_slider_pause_on_hover=\"no\" background_slider_slideshow_speed=\"5000\" background_slider_animation=\"fade\" background_slider_direction=\"up\" background_slider_animation_speed=\"800\" video_aspect_ratio=\"16:9\" video_loop=\"yes\" video_mute=\"yes\" pattern_bg=\"none\" pattern_bg_style=\"default\" pattern_bg_opacity=\"100\" pattern_bg_blend_mode=\"normal\" mask_bg=\"none\" mask_bg_style=\"default\" mask_bg_opacity=\"100\" mask_bg_transform=\"left\" mask_bg_blend_mode=\"normal\" absolute=\"off\" absolute_devices=\"small,medium,large\" sticky=\"off\" sticky_devices=\"small-visibility,medium-visibility,large-visibility\" sticky_transition_offset=\"0\" scroll_offset=\"0\" animation_direction=\"left\" animation_speed=\"0.3\" animation_delay=\"0\" filter_hue=\"0\" filter_saturation=\"100\" filter_brightness=\"100\" filter_contrast=\"100\" filter_invert=\"0\" filter_sepia=\"0\" filter_opacity=\"100\" filter_blur=\"0\" filter_hue_hover=\"0\" filter_saturation_hover=\"100\" filter_brightness_hover=\"100\" filter_contrast_hover=\"100\" filter_invert_hover=\"0\" filter_sepia_hover=\"0\" filter_opacity_hover=\"100\" filter_blur_hover=\"0\"][fusion_builder_row][fusion_builder_column type=\"1_1\" layout=\"1_1\" align_self=\"auto\" content_layout=\"column\" align_content=\"flex-start\" valign_content=\"flex-start\" content_wrap=\"wrap\" center_content=\"no\" column_tag=\"div\" target=\"_self\" hide_on_mobile=\"small-visibility,medium-visibility,large-visibility\" sticky_display=\"normal,sticky\" order_medium=\"0\" order_small=\"0\" margin_bottom_small=\"35px\" margin_bottom=\"65px\" padding_right_small=\"0px\" padding_left_small=\"0px\" padding_right=\"0px\" padding_left=\"0px\" hover_type=\"none\" border_style=\"solid\" box_shadow=\"no\" box_shadow_blur=\"0\" box_shadow_spread=\"0\" background_type=\"single\" gradient_start_position=\"0\" gradient_end_position=\"100\" gradient_type=\"linear\" radial_direction=\"center center\" linear_angle=\"180\" lazy_load=\"none\" background_position=\"left top\" background_repeat=\"no-repeat\" background_blend_mode=\"none\" background_slider_skip_lazy_loading=\"no\" background_slider_loop=\"yes\" background_slider_pause_on_hover=\"no\" background_slider_slideshow_speed=\"5000\" background_slider_animation=\"fade\" background_slider_direction=\"up\" background_slider_animation_speed=\"800\" sticky=\"off\" sticky_devices=\"small-visibility,medium-visibility,large-visibility\" absolute=\"off\" filter_type=\"regular\" filter_hover_element=\"self\" filter_hue_hover=\"0\" filter_saturation_hover=\"100\" filter_brightness_hover=\"100\" filter_contrast_hover=\"100\" filter_invert_hover=\"0\" filter_sepia_hover=\"0\" filter_opacity_hover=\"100\" filter_blur_hover=\"0\" filter_hue=\"0\" filter_saturation=\"100\" filter_brightness=\"100\" filter_contrast=\"100\" filter_invert=\"0\" filter_sepia=\"0\" filter_opacity=\"100\" filter_blur=\"0\" transform_type=\"regular\" transform_hover_element=\"self\" transform_scale_x_hover=\"1\" transform_scale_y_hover=\"1\" transform_translate_x_hover=\"0\" transform_translate_y_hover=\"0\" transform_rotate_hover=\"0\" transform_skew_x_hover=\"0\" transform_skew_y_hover=\"0\" transform_scale_x=\"1\" transform_scale_y=\"1\" transform_translate_x=\"0\" transform_translate_y=\"0\" transform_rotate=\"0\" transform_skew_x=\"0\" transform_skew_y=\"0\" transition_duration=\"300\" transition_easing=\"ease\" motion_effects=\"W10=\" scroll_motion_devices=\"small-visibility,medium-visibility,large-visibility\" animation_direction=\"left\" animation_speed=\"0.3\" animation_delay=\"0\" last=\"true\" border_position=\"all\" first=\"true\" min_height=\"\" link=\"\"][fusion_text content_alignment=\"justify\" disable_idd=\"no\" hide_on_mobile=\"small-visibility,medium-visibility,large-visibility\" sticky_display=\"normal,sticky\" html_attributes=\"W10=\" fusion_font_family_text_font=\"Sora\" fusion_font_variant_text_font=\"300\" font_size=\"20px\" line_height=\"32px\" animation_direction=\"left\" animation_speed=\"0.3\" animation_delay=\"0\"]", "B": "[/fusion_text][/fusion_builder_column][/fusion_builder_row][/fusion_builder_container][fusion_builder_container type=\"flex\" hundred_percent=\"no\" hundred_percent_height=\"no\" hundred_percent_height_scroll=\"no\" align_content=\"stretch\" flex_align_items=\"flex-start\" flex_justify_content=\"flex-start\" flex_wrap=\"wrap\" hundred_percent_height_center_content=\"yes\" equal_height_columns=\"no\" container_tag=\"div\" hide_on_mobile=\"small-visibility,medium-visibility,large-visibility\" status=\"published\" margin_bottom=\"45px\" padding_right_small=\"0px\" padding_left_small=\"0px\" border_style=\"solid\" box_shadow=\"no\" box_shadow_blur=\"0\" box_shadow_spread=\"0\" gradient_start_position=\"0\" gradient_end_position=\"100\" gradient_type=\"linear\" radial_direction=\"center center\" linear_angle=\"180\" background_position=\"center center\" background_repeat=\"no-repeat\" fade=\"no\" background_parallax=\"none\" enable_mobile=\"no\" parallax_speed=\"0.3\" background_blend_mode=\"none\" background_slider_skip_lazy_loading=\"no\" background_slider_loop=\"yes\" background_slider_pause_on_hover=\"no\" background_slider_slideshow_speed=\"5000\" background_slider_animation=\"fade\" background_slider_direction=\"up\" background_slider_animation_speed=\"800\" video_aspect_ratio=\"16:9\" video_loop=\"yes\" video_mute=\"yes\" pattern_bg=\"none\" pattern_bg_style=\"default\" pattern_bg_opacity=\"100\" pattern_bg_blend_mode=\"normal\" mask_bg=\"none\" mask_bg_style=\"default\" mask_bg_opacity=\"100\" mask_bg_transform=\"left\" mask_bg_blend_mode=\"normal\" absolute=\"off\" absolute_devices=\"small,medium,large\" sticky=\"off\" sticky_devices=\"small-visibility,medium-visibility,large-visibility\" sticky_transition_offset=\"0\" scroll_offset=\"0\" animation_direction=\"left\" animation_speed=\"0.3\" animation_delay=\"0\" filter_hue=\"0\" filter_saturation=\"100\" filter_brightness=\"100\" filter_contrast=\"100\" filter_invert=\"0\" filter_sepia=\"0\" filter_opacity=\"100\" filter_blur=\"0\" filter_hue_hover=\"0\" filter_saturation_hover=\"100\" filter_brightness_hover=\"100\" filter_contrast_hover=\"100\" filter_invert_hover=\"0\" filter_sepia_hover=\"0\" filter_opacity_hover=\"100\" filter_blur_hover=\"0\"][fusion_builder_row]", "YT": "[fusion_builder_column type=\"1_1\" layout=\"1_1\" align_self=\"auto\" content_layout=\"column\" align_content=\"flex-start\" valign_content=\"flex-start\" content_wrap=\"wrap\" center_content=\"no\" column_tag=\"div\" target=\"_self\" hide_on_mobile=\"small-visibility,medium-visibility,large-visibility\" sticky_display=\"normal,sticky\" order_medium=\"0\" order_small=\"0\" margin_bottom=\"0px\" padding_right=\"0px\" padding_left=\"0px\" hover_type=\"none\" border_style=\"solid\" box_shadow=\"no\" box_shadow_blur=\"0\" box_shadow_spread=\"0\" background_type=\"single\" gradient_start_position=\"0\" gradient_end_position=\"100\" gradient_type=\"linear\" radial_direction=\"center center\" linear_angle=\"180\" lazy_load=\"none\" background_position=\"left top\" background_repeat=\"no-repeat\" background_blend_mode=\"none\" background_slider_skip_lazy_loading=\"no\" background_slider_loop=\"yes\" background_slider_pause_on_hover=\"no\" background_slider_slideshow_speed=\"5000\" background_slider_animation=\"fade\" background_slider_direction=\"up\" background_slider_animation_speed=\"800\" sticky=\"off\" sticky_devices=\"small-visibility,medium-visibility,large-visibility\" absolute=\"off\" filter_type=\"regular\" filter_hover_element=\"self\" filter_hue_hover=\"0\" filter_saturation_hover=\"100\" filter_brightness_hover=\"100\" filter_contrast_hover=\"100\" filter_invert_hover=\"0\" filter_sepia_hover=\"0\" filter_opacity_hover=\"100\" filter_blur_hover=\"0\" filter_hue=\"0\" filter_saturation=\"100\" filter_brightness=\"100\" filter_contrast=\"100\" filter_invert=\"0\" filter_sepia=\"0\" filter_opacity=\"100\" filter_blur=\"0\" transform_type=\"regular\" transform_hover_element=\"self\" transform_scale_x_hover=\"1\" transform_scale_y_hover=\"1\" transform_translate_x_hover=\"0\" transform_translate_y_hover=\"0\" transform_rotate_hover=\"0\" transform_skew_x_hover=\"0\" transform_skew_y_hover=\"0\" transform_scale_x=\"1\" transform_scale_y=\"1\" transform_translate_x=\"0\" transform_translate_y=\"0\" transform_rotate=\"0\" transform_skew_x=\"0\" transform_skew_y=\"0\" transition_duration=\"300\" transition_easing=\"ease\" motion_effects=\"W10=\" scroll_motion_devices=\"small-visibility,medium-visibility,large-visibility\" animation_direction=\"left\" animation_speed=\"0.3\" animation_delay=\"0\" last=\"true\" border_position=\"all\" first=\"true\" min_height=\"\" link=\"\"][fusion_youtube id=\"{{YT}}\" width=\"600\" height=\"350\" autoplay=\"false\" mute=\"false\" loop=\"false\" controls=\"true\" thumbnail_size=\"auto\" video_facade_no_cookie=\"on\" hide_on_mobile=\"small-visibility,medium-visibility,large-visibility\" structured_data=\"off\" video_upload_date_timezone=\"-12:00\" /][/fusion_builder_column]", "C": "[fusion_builder_column type=\"1_1\" layout=\"1_1\" align_self=\"auto\" content_layout=\"column\" align_content=\"flex-start\" valign_content=\"flex-start\" content_wrap=\"wrap\" center_content=\"no\" target=\"_self\" hide_on_mobile=\"small-visibility,medium-visibility,large-visibility\" sticky_display=\"normal,sticky\" order_medium=\"0\" order_small=\"0\" hover_type=\"none\" border_style=\"solid\" box_shadow=\"no\" box_shadow_blur=\"0\" box_shadow_spread=\"0\" background_type=\"single\" gradient_start_position=\"0\" gradient_end_position=\"100\" gradient_type=\"linear\" radial_direction=\"center center\" linear_angle=\"180\" background_position=\"left top\" background_repeat=\"no-repeat\" background_blend_mode=\"none\" filter_type=\"regular\" filter_hue=\"0\" filter_saturation=\"100\" filter_brightness=\"100\" filter_contrast=\"100\" filter_invert=\"0\" filter_sepia=\"0\" filter_opacity=\"100\" filter_blur=\"0\" filter_hue_hover=\"0\" filter_saturation_hover=\"100\" filter_brightness_hover=\"100\" filter_contrast_hover=\"100\" filter_invert_hover=\"0\" filter_sepia_hover=\"0\" filter_opacity_hover=\"100\" filter_blur_hover=\"0\" animation_direction=\"left\" animation_speed=\"0.3\" margin_bottom=\"0 px\" margin_bottom_small=\"50px\" last=\"true\" border_position=\"all\" first=\"true\" padding_top=\"65px\" margin_top=\"0px\" min_height=\"\" link=\"\"][fusion_text content_alignment=\"justify\" disable_idd=\"no\" hide_on_mobile=\"small-visibility,medium-visibility,large-visibility\" sticky_display=\"normal,sticky\" html_attributes=\"W10=\" fusion_font_family_text_font=\"Sora\" fusion_font_variant_text_font=\"300\" font_size=\"20px\" line_height=\"32px\" animation_direction=\"left\" animation_speed=\"0.3\" animation_delay=\"0\"]", "D": "[/fusion_text][/fusion_builder_column][/fusion_builder_row][/fusion_builder_container]"};
+const $=id=>document.getElementById(id);
+const state={auth:null,me:null,paras:[],split:0,tax:{},img1:null,img1label:'',img2:null,cands:[]};
+
+function msg(id,cls,t){const e=$(id);e.className='msg '+cls;e.textContent=t;}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+const scripts={};
+function loadScript(src){return scripts[src]||(scripts[src]=new Promise((ok,ko)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=()=>ko(new Error('impossibile caricare la libreria (serve la connessione)'));document.head.appendChild(s);}));}
+
+
+/* messaggio alla redazione: aperto la prima volta che si usa una versione nuova */
+(function(){try{const k='sp_nota_letta';if(localStorage.getItem(k)!==APP_VERSION){$('nota').open=true;}
+$('nota').addEventListener('toggle',()=>{if(!$('nota').open){try{localStorage.setItem(k,APP_VERSION)}catch(e){}}});}catch(e){}})();
+/* ---------- API WordPress ---------- */
+function api(path,opt={}){
+  const site=$('site').value.replace(/\/+$/,'');
+  opt.headers=Object.assign({},opt.headers||{},{Authorization:'Basic '+state.auth});
+  return fetch(site+'/wp-json'+path,opt).then(async r=>{
+    if(!r.ok){let d='';try{d=(await r.json()).message||''}catch(e){}
+      throw new Error('HTTP '+r.status+(d?' – '+d:''));}
+    return r.json();
+  });
+}
+
+/* ---------- 1 login ---------- */
+$('btnLogin').onclick=async()=>{
+  const site=$('site').value.replace(/\/+$/,'');
+  msg('mLogin','ok','Verifico…');
+  /* 1. il sito è raggiungibile da questa pagina? (prova senza credenziali) */
+  let root=null;
+  try{
+    const r=await fetch(site+'/wp-json/');
+    root=r.ok?await r.json():{};
+  }catch(e){
+    state.auth=null;
+    msg('mLogin','err','Da questa pagina il sito non è raggiungibile: è un blocco del browser (CORS), non un problema di credenziali. Succede soprattutto aprendo il file direttamente dal disco. Rimedi: servire questo file da un indirizzo http(s) — per esempio dallo spazio web del sito — oppure chiedere all’amministratore di consentire le richieste all’API da altre origini.');
+    return;
+  }
+  const appPw=root&&root.authentication&&root.authentication['application-passwords'];
+  /* 2. le credenziali */
+  try{
+    state.auth=btoa(unescape(encodeURIComponent($('user').value.trim()+':'+$('pass').value.trim())));
+    state.me=await api('/wp/v2/users/me?context=edit');
+    let taxNote='';
+    try{
+      const tx=await api('/wp/v2/taxonomies');
+      for(const k in tx){const s=(tx[k].slug||k).toLowerCase();
+        if(s.includes('director'))state.tax.director=tx[k].rest_base;
+        if(s.includes('starring'))state.tax.starring=tx[k].rest_base;}
+      if(!state.tax.director||!state.tax.starring)taxNote=' (Regista/Attori andranno indicati a mano in WordPress)';
+    }catch(e){taxNote=' (Regista/Attori andranno indicati a mano in WordPress)';}
+    msg('mLogin','ok','Collegato come '+state.me.name+': sito raggiungibile e credenziali valide.'+taxNote);done(1);
+  }catch(e){
+    state.auth=null;
+    let m='Il sito risponde, ma l’accesso è stato rifiutato ('+e.message+'). ';
+    if(!appPw){
+      m+='Su questo sito le Application Password risultano DISATTIVATE (di solito da un plugin di sicurezza o dall’hosting): senza, questa pagina non può accedere. Va chiesto all’amministratore di abilitarle.';
+    }else{
+      m+='Attenzione: la password con cui entri in wp-admin qui NON funziona. Serve una Application Password: apri '+site+'/wp-admin/profile.php, scorri fino ad «Application Passwords», dai un nome (es. «app recensioni»), premi «Aggiungi» e incolla qui il codice generato, spazi compresi. Se hai già fatto così e l’errore resta, probabilmente il server scarta l’intestazione di autenticazione: l’amministratore può risolvere aggiungendo al file .htaccess la riga RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]';
+    }
+    msg('mLogin','err',m);
+  }
+};
+
+/* ---------- 2 importazione ---------- */
+/* HTML importato: converte le classi corsivo/grassetto (Google Docs) in stili inline
+   e rimuove style/script perché non sporchino la pagina */
+function setPaste(html){
+  const doc=new DOMParser().parseFromString(html,'text/html');
+  let css='';doc.querySelectorAll('style').forEach(s=>css+=s.textContent);
+  const grab=re=>{const out=new Set();let m;while((m=re.exec(css)))out.add(m[1]);return out;};
+  const ital=grab(/\.([\w-]+)[^{]*\{[^}]*font-style\s*:\s*italic/g);
+  const bold=grab(/\.([\w-]+)[^{]*\{[^}]*font-weight\s*:\s*(?:700|800|900|bold)/g);
+  doc.querySelectorAll('[class]').forEach(el=>{
+    el.classList.forEach(c=>{
+      if(ital.has(c))el.style.fontStyle='italic';
+      if(bold.has(c))el.style.fontWeight='700';
+    });
+  });
+  doc.querySelectorAll('style,script,link,meta,title').forEach(e=>e.remove());
+  $('paste').innerHTML=doc.body?doc.body.innerHTML:html;
+}
+$('btnGdoc').onclick=async()=>{
+  const m=($('gdoc').value||'').match(/\/document\/d\/([\w-]+)/);
+  if(!m){msg('mParse','err','Link del Google Doc non riconosciuto.');return;}
+  try{
+    const r=await fetch('https://docs.google.com/document/d/'+m[1]+'/export?format=html');
+    if(!r.ok)throw 0;
+    setPaste(await r.text());
+    msg('mParse','ok','Documento importato: premi «Leggi il testo e compila tutto».');
+  }catch(e){msg('mParse','warn','Importazione automatica non riuscita (permessi o rete): scarica il Doc come Word/PDF e caricalo qui sotto, oppure copia e incolla il testo.');}
+};
+
+$('docfile').onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;
+  const ext=(f.name.split('.').pop()||'').toLowerCase();
+  try{
+    if(ext==='docx'){
+      await loadScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js');
+      const res=await window.mammoth.convertToHtml({arrayBuffer:await f.arrayBuffer()});
+      $('paste').innerHTML=res.value;
+      msg('mParse','ok','Word importato (se il documento aveva versi centrati o epigrafi a destra, sistemali al passo 4). Premi «Leggi il testo e compila tutto».');
+    }else if(ext==='pdf'){
+      await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      const doc=await window.pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise;
+      const paras=[];let cur=null;
+      for(let p=1;p<=doc.numPages;p++){
+        const tc=await (await doc.getPage(p)).getTextContent();
+        const lines=[];let lastY=null,gaps=[];
+        tc.items.forEach(it=>{
+          const y=Math.round(it.transform[5]);
+          let ln=lines[lines.length-1];
+          if(!ln||Math.abs(ln.y-y)>3){if(ln&&lastY!==null)gaps.push(Math.abs(lastY-y));lines.push(ln={y,items:[]});lastY=y;}
+          const st=(tc.styles[it.fontName]||{});
+          const italic=/italic|oblique/i.test((st.fontFamily||'')+' '+it.fontName);
+          ln.items.push({t:it.str,i:italic});
+        });
+        gaps=gaps.filter(g=>g>2).sort((a,b)=>a-b);
+        const base=gaps.length?gaps[Math.floor(gaps.length/2)]:14;
+        let prevY=null;
+        lines.forEach(ln=>{
+          const brk=prevY===null||Math.abs(prevY-ln.y)>base*1.6;
+          if(brk||!cur){cur={runs:[]};paras.push(cur);}
+          ln.items.forEach(r=>{if(r.t)cur.runs.push(r)});
+          cur.runs.push({t:' ',i:false});
+          prevY=ln.y;
+        });
+        cur=null;
+      }
+      $('paste').innerHTML=paras.map(p=>{
+        let h='<p>',it=false;
+        p.runs.forEach(r=>{if(r.i!==it){h+=r.i?'<i>':'</i>';it=r.i;}h+=esc(r.t);});
+        if(it)h+='</i>';return h+'</p>';
+      }).join('');
+      msg('mParse','warn','PDF importato: i corsivi e la divisione dei paragrafi sono ricostruiti, ricontrollali nell’anteprima. Poi premi «Leggi il testo e compila tutto».');
+    }else if(ext==='txt'){
+      const t=await f.text();
+      $('paste').innerHTML=t.split(/\n\s*\n/).map(p=>'<p>'+esc(p.trim()).replace(/\n/g,'<br>')+'</p>').join('');
+      msg('mParse','ok','Testo importato (i corsivi non esistono nel .txt: aggiungili nell’anteprima se servono).');
+    }else if(ext==='html'||ext==='htm'){
+      setPaste(await f.text());
+      msg('mParse','ok','HTML importato: premi «Leggi il testo e compila tutto».');
+    }else{
+      msg('mParse','err','Il vecchio formato .doc non è leggibile qui: salva il file come .docx oppure copia e incolla il testo.');
+    }
+  }catch(err){msg('mParse','err','Importazione non riuscita: '+err.message);}
+};
+
+/* ---------- parsing paragrafi ---------- */
+function runsOf(node,it,bo){
+  let out=[];
+  node.childNodes.forEach(n=>{
+    if(n.nodeType===3){out.push({t:n.textContent,i:it,b:bo});return;}
+    if(n.nodeType!==1)return;
+    const st=n.style||{};const tag=n.tagName;
+    const i2=it||tag==='I'||tag==='EM'||/italic/.test(st.fontStyle||'');
+    const b2=bo||tag==='B'||tag==='STRONG'||parseInt(st.fontWeight)>=600;
+    if(tag==='BR'){out.push({t:'\n',i:i2,b:b2});return;}
+    out=out.concat(runsOf(n,i2,b2));
+  });
+  return out;
+}
+function parseParas(){
+  const root=$('paste');
+  const blocks=root.querySelectorAll('p,li,h1,h2,h3,div');
+  const list=[];const seen=new Set();
+  blocks.forEach(b=>{
+    if([...b.querySelectorAll('p,li,div')].length)return;
+    if(seen.has(b))return;seen.add(b);
+    const runs=runsOf(b,false,false).filter(r=>r.t.length);
+    const text=runs.map(r=>r.t).join('');
+    if(!text.trim())return;
+    let al=(b.style.textAlign||'').toLowerCase();
+    if(!['center','right','justify','left'].includes(al))al='justify';
+    list.push({runs,text:text.trim(),align:al});
+  });
+  if(!list.length){ /* testo incollato senza formattazione: solo nodi di testo */
+    (root.innerText||root.textContent||'').split(/\n\s*\n|\n/).map(s=>s.trim()).filter(Boolean)
+      .forEach(t=>list.push({runs:[{t,i:false,b:false}],text:t,align:'justify'}));
+  }
+  return list;
+}
+/* ---------- rilevamento di titolo e regista dal testo ---------- */
+function escRe(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+function detectFilm(){
+  const freq={},bonus={},regOf={};
+  const add=(s,w)=>{
+    s=s.trim().replace(/^[«"'‘“(]+|[»"'’”),.;:!?]+$/g,'').trim();
+    if(s.length<2||s.length>60||/^\d+$/.test(s))return null;
+    freq[s]=(freq[s]||0)+(w||1);return s;
+  };
+  state.paras.forEach(p=>{
+    let cur='';
+    p.runs.forEach(r=>{if(r.i)cur+=r.t;else{if(cur.trim())add(cur,2);cur='';}});
+    if(cur.trim())add(cur,2);
+    (p.text.match(/«([^»]{2,60})»/g)||[]).forEach(q=>add(q,1)); /* anche tra caporali, con peso minore */
+  });
+  const txt=state.paras.map(p=>p.text).join(' ');
+  const NAME="([A-Z\u00C0-\u00DE][\\w'\u2019\u00E0-\u00FF-]+(?:\\s+[A-Z\u00C0-\u00DE][\\w'\u2019\u00E0-\u00FF-]+){1,2})";
+  /* formule tipiche delle recensioni: trovano il titolo anche in un testo senza corsivi,
+     e a volte anche il regista */
+  const T="([A-Z\u00C0-\u00DE][^.;:!?\u00AB\u00BB]{1,45}?)";
+  let mm;
+  const re1=new RegExp(T+",?\\s+(?:l['\u2019]esordio|l['\u2019]opera prima|il nuovo film|il film|il debutto|la nuova pellicola)\\s+di\\s+"+NAME,"g");
+  while((mm=re1.exec(txt))){const c=add(mm[1],3);if(c){bonus[c]=(bonus[c]||0)+8;if(!regOf[c])regOf[c]=mm[2];}}
+  const re2=new RegExp("(?:^|[.!?]\\s+)"+T+"\\s+\u00E8\\s+un[a'\u2019]?\\s*(?:film|pellicola|opera|documentario|commedia|thriller|noir|western|horror|esordio)","g");
+  while((mm=re2.exec(txt))){const c=add(mm[1],3);if(c)bonus[c]=(bonus[c]||0)+8;}
+  let cands=Object.entries(freq).sort((a,b)=>b[1]-a[1]||b[0].length-a[0].length).map(x=>x[0]).slice(0,8);
+  /* privilegia il corsivo che apre il pezzo e quello nominato accanto a parole di cinema:
+     distingue il film dalle opere solo citate (libri, altri film) */
+  const first2=state.paras.slice(0,2).filter(p=>p.align==='justify').map(p=>p.text).join(' ');
+  const KW=/film|pellicola|regia|regist|cinema|schermo|lungometraggio|inquadratur|montaggio|girare|ripresa|opera prima/i;
+  const LIBRO=/scritt|libro|romanz|racconto|saggio|poesia|pagine|capitolo/i;
+  const CITAZ=/[A-ZÀ-Þ][\wà-ÿ]+\s+[A-ZÀ-Þ][\wà-ÿ]+,\s*$/;
+  const scoreOf=c=>{
+    let s=freq[c]+(bonus[c]||0);
+    if(c.split(/\s+/).length>7)s-=5;                       /* più frase che titolo */
+    if(/(^|\s)(è|c'è|c’è|sono|era|sarà|perché|abbiamo|quella|questo)(\s|$)/i.test(c))s-=4;
+    if(first2.includes(c))s+=3;
+    let idx=-1,pen=0,bon=0;
+    while((idx=txt.indexOf(c,idx+1))>-1){
+      const pre=txt.slice(Math.max(0,idx-38),idx);
+      if(LIBRO.test(pre)||CITAZ.test(pre))pen+=4;
+      if(KW.test(pre))bon+=3;
+    }
+    const sent=txt.match(new RegExp('[^.!?]*'+escRe(c)+'[^.!?]*'));
+    if(sent&&KW.test(sent[0]))bon+=3;
+    return s+Math.min(6,bon)-Math.min(8,pen);
+  };
+  cands=cands.map(c=>[c,scoreOf(c)]).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
+  /* 1) il candidato con regista già trovato dalle formule, o seguito da «di Nome Cognome» */
+  for(const c of cands){
+    if(regOf[c])return {film:c,reg:regOf[c]};
+    const m=txt.match(new RegExp(escRe(c)+"[»\"']?\\s*,?\\s+di\\s+"+NAME));
+    if(m)return {film:c,reg:m[1]};
+  }
+  /* 2) regista da formule esplicite, titolo dal corsivo più frequente */
+  let reg=null;
+  const rm=txt.match(new RegExp("(?:diretto da|[Rr]egia di|firmato da|il film di|l'esordio di)\\s+"+NAME));
+  if(rm)reg=rm[1];
+  if(cands[0])return {film:cands[0],reg};
+  return null;
+}
+$('btnParse').onclick=async()=>{
+  let list=parseParas();
+  if(!list.length){msg('mParse','err','Nessun testo trovato: importa o incolla la recensione qui sopra.');return;}
+  let note='';
+  const t=list[0].text;
+  const m=t.length<90&&t.match(/^(.+?),?\s+di\s+(.+?)\.?$/);
+  if(m){$('film').value=m[1].trim();$('regista').value=m[2].trim();list.shift();note='Titolo e regista letti dalla prima riga. ';}
+  if(state.me&&list.length&&list[list.length-1].text.toLowerCase()===state.me.name.toLowerCase()){
+    list.pop();note+='Firma finale rimossa (l’autore appare già come firma dell’articolo). ';}
+  state.paras=list;state.split=Math.max(0,Math.ceil(list.length/2)-1);
+  if(!$('film').value.trim()){
+    const det=detectFilm();
+    if(det){
+      $('film').value=det.film;
+      if(det.reg&&!$('regista').value)$('regista').value=det.reg;
+      note+='Titolo e regista rilevati dal testo («'+det.film+'»'+(det.reg?' di '+det.reg:'')+'): controlla che siano giusti. ';
+    }
+  }
+  syncMeta();renderParas();
+  if(!$('film').value.trim()){
+    msg('mParse','warn',note+list.length+' paragrafi letti, ma non sono riuscito a capire il titolo del film (né dalla prima riga né dai corsivi del testo): scrivi titolo e regista al passo 3 e premi «Compila automaticamente».');
+    return;
+  }
+  msg('mParse','ok',note+list.length+' paragrafi. Cerco in rete dati del film e immagini…');
+  const res=await autofill();
+  let m2=note+list.length+' paragrafi. ';
+  if(res.info.length)m2+='Compilato: '+res.info.join('; ')+'. ';
+  if(res.fails.length)msg('mParse','warn',m2+'Attenzione: '+res.fails.join('; ')+'.');
+  else msg('mParse','ok',m2+'Controlla i passi 3–6 e premi «Crea bozza».');
+};
+
+/* ---------- ricerca in rete (IMDb, Wikidata, Wikipedia) ---------- */
+function jsonp(url,cb){return new Promise((ok,ko)=>{
+  let done=false;const s=document.createElement('script');
+  window[cb]=d=>{done=true;try{delete window[cb]}catch(e){}s.remove();ok(d);};
+  s.src=url;s.onerror=()=>{if(!done){s.remove();ko(new Error('load'));}};
+  document.head.appendChild(s);
+  setTimeout(()=>{if(!done){s.remove();ko(new Error('timeout'));}},8000);
+});}
+async function imdbSuggest(q){
+  const first=/^[a-z0-9]/.test(q)?q[0]:'x';
+  try{
+    const r=await fetch('https://v2.sg.media-imdb.com/suggestion/'+first+'/'+encodeURIComponent(q)+'.json');
+    if(r.ok)return ((await r.json()).d||[]);
+  }catch(e){}
+  try{
+    const d=await jsonp('https://sg.media-imdb.com/suggests/'+first+'/'+encodeURIComponent(q)+'.json','imdb$'+q.replace(/[^a-z0-9]/g,'_'));
+    return d.d||[];
+  }catch(e){}
+  return null;
+}
+function mins(v){v=Math.round(Math.abs(v));if(v>400)v=Math.round(v/60);return v;} /* alcune fonti registrano i secondi */
+async function itunesFilm(q){
+  try{const r=await fetch('https://itunes.apple.com/search?media=movie&limit=5&term='+encodeURIComponent(q));
+    if(r.ok)return (await r.json()).results||[];}catch(e){}
+  try{const d=await jsonp('https://itunes.apple.com/search?media=movie&limit=5&callback=_itcb&term='+encodeURIComponent(q),'_itcb');
+    return d.results||[];}catch(e){}
+  return null;
+}
+const WD='https://www.wikidata.org/w/api.php';
+async function wdJson(params){return (await fetch(WD+'?format=json&origin=*&'+params)).json();}
+async function wikidataFilm(film,reg){
+  const s=await wdJson('action=wbsearchentities&language=it&uselang=it&limit=7&type=item&search='+encodeURIComponent(film));
+  const hits=s.search||[];
+  if(!hits.length)return null;
+  const rl=(reg||'').toLowerCase();
+  const h=(rl&&hits.find(x=>(x.description||'').toLowerCase().includes(rl)))
+    ||hits.find(x=>/film/i.test(x.description||''))||hits[0];
+  const e=await wdJson('action=wbgetentities&props=claims|sitelinks&ids='+h.id);
+  const ent=e.entities&&e.entities[h.id];if(!ent)return null;
+  const c=ent.claims||{};
+  const val=p=>c[p]&&c[p][0]&&c[p][0].mainsnak&&c[p][0].mainsnak.datavalue&&c[p][0].mainsnak.datavalue.value;
+  const qids=p=>(c[p]||[]).map(x=>x.mainsnak&&x.mainsnak.datavalue&&x.mainsnak.datavalue.value&&x.mainsnak.datavalue.value.id).filter(Boolean);
+  const out={label:h.label,desc:h.description||''};
+  out.imdb=typeof val('P345')==='string'?val('P345'):null;
+  const t=val('P577');out.anno=t&&t.time?t.time.slice(1,5):null;
+  const du=val('P2047');out.durata=du&&du.amount?mins(parseFloat(du.amount)):null;
+  out.ytIt=null;out.ytOrig=null;
+  (c.P1651||[]).forEach(st=>{
+    const id=st.mainsnak&&st.mainsnak.datavalue&&st.mainsnak.datavalue.value;if(typeof id!=='string')return;
+    const langs=((st.qualifiers&&st.qualifiers.P407)||[]).map(q=>q.datavalue&&q.datavalue.value&&q.datavalue.value.id);
+    if(langs.includes('Q652')){if(!out.ytIt)out.ytIt=id;}
+    else if(!out.ytOrig)out.ytOrig=id;
+  });
+  const castQ=qids('P161').slice(0,4),regQ=qids('P57').slice(0,1);
+  const img=val('P3383')||val('P18');out.commons=typeof img==='string'?img:null;
+  out.wiki=(ent.sitelinks&&((ent.sitelinks.itwiki&&{l:'it',t:ent.sitelinks.itwiki.title})||(ent.sitelinks.enwiki&&{l:'en',t:ent.sitelinks.enwiki.title})))||null;
+  const need=[...castQ,...regQ];
+  if(need.length){
+    const le=await wdJson('action=wbgetentities&props=labels&languages=it|en&ids='+need.join('|'));
+    const lab=id=>{const L=le.entities&&le.entities[id]&&le.entities[id].labels;return L&&((L.it&&L.it.value)||(L.en&&L.en.value));};
+    out.cast=castQ.map(lab).filter(Boolean);
+    out.regista=regQ.length?lab(regQ[0]):null;
+  }
+  return out;
+}
+
+/* fotogrammi diversi che YouTube genera per ogni video */
+function ytFrames(id){
+  return ['maxresdefault','maxres1','maxres2','maxres3','hq1','hq2','hq3','hqdefault']
+    .map(k=>({u:'https://i.ytimg.com/vi/'+id+'/'+k+'.jpg',l:'Fotogramma dal trailer'}));
+}
+const cardEl=n=>document.querySelectorAll('.card')[n-1];
+const done=(n,on)=>{const c=cardEl(n);if(c)c.classList[on===false?'remove':'add']('done');};
+/* riassunto in stile rivista: parole-tema + frase di giudizio (~200-240 caratteri) */
+function buildExcerpt(film,reg){
+  const jp=state.paras.filter(p=>p.align==='justify');
+  if(!jp.length)return '';
+  const sents=[];jp.forEach(p=>(p.text.match(/[^.!?]+[.!?]/g)||[]).forEach(s=>sents.push(s.trim())));
+  if(!sents.length)return '';
+  const STOP=new Set(('della delle degli dello del di da in con su per tra fra il lo la le gli un una uno che non come dove quando anche ancora quindi questo questa questi queste quello quella quelle cui nel nella nelle negli sulla sulle sugli alla alle agli essere sono stato stata stati viene vengono fanno fare film regista registi pellicola opera senza sempre tutto tutti tutte ogni suo sua suoi sue loro proprio propria dopo prima contro verso sotto sopra fino oltre appare appaiono resta restano infatti dunque mentre perché eppure invece narrazione personaggi personaggio protagonisti protagonista racconto storia scena scene spettatore spettatori immagine immagini titolo momento momenti parte parti punto tempo modo visione sguardo'+' '+film.toLowerCase()+' '+(reg||'').toLowerCase()).split(/\s+/));
+  const low=jp.map(p=>p.text).join(' ').toLowerCase();
+  const ws=low.replace(/[^\w\u00e0-\u00ff'\u2019]/g,' ').split(/\s+/).map(w=>w.replace(/^(?:l|un|d|all|dall|dell|nell|sull|quell)['\u2019]/,'')).filter(w=>w.length>=5&&!STOP.has(w)&&!/\d/.test(w));
+  const f={};ws.forEach(w=>f[w]=(f[w]||0)+1);
+  const ABS=/(t\u00e0|ismo|zione|sione|gione|ezza|enza|anza|ogia|edia|etto|aggio|ore|ura)$/;
+  const themes=Object.keys(f).filter(w=>f[w]>=2)
+    .sort((a,b)=>(f[b]+(ABS.test(b)?3:0))-(f[a]+(ABS.test(a)?3:0))).slice(0,3);
+  const EVAL=/ambizios|audac|esil|riuscit|potent|necessari|fragil|ricercat|convincent|sorprendent|pirotecnic|febbril|intens|radical|spiazzant|corrosiv|prezios|magnetic|ipnotic|vibrant|scarn|elegant|brutal|lucid|folgorant|matur|acerb|original|pretenzios|sincer|onest|coraggios/;
+  let best=null,bs=-1,bi=-1;
+  sents.forEach((s,i)=>{
+    if(s.length<60||s.length>210)return;
+    let sc=0;const sl=s.toLowerCase();
+    if(sl.includes(film.toLowerCase()))sc+=4;
+    if(EVAL.test(sl))sc+=3;
+    if(/film|esordio|pellicola|opera|racconto|narrazione/.test(sl))sc+=2;
+    sc+=(i/sents.length)*2;                       /* il giudizio sta in fondo */
+    if(/^(Ma |Eppure|Insomma|In definitiva|Alla fine|Dietro)/.test(s))sc+=1;
+    if(sc>bs){bs=sc;best=s;bi=i;}
+  });
+  /* se lo strillo resta corto, prosegui con la frase successiva */
+  if(best&&bi>-1&&sents[bi+1]&&(best.length+sents[bi+1].length)<235&&best.length<150)
+    best=best+' '+sents[bi+1];
+  const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+  const head=themes.length?cap(themes.join(', '))+'. ':'';
+  let out=head+(best||sents[0]);
+  if(film&&!out.toLowerCase().includes(film.toLowerCase()))
+    out=head+film+' di '+reg+': '+(best||sents[0]).replace(/^[A-Z\u00c0-\u00de]/,c=>c.toLowerCase());
+  if(out.length>260){out=out.slice(0,250);out=out.slice(0,Math.max(out.lastIndexOf(' '),200))+'\u2026';}
+  return out.trim();
+}
+/* ---------- compilazione automatica ---------- */
+async function autofill(){
+  const film=$('film').value.trim();
+  const info=[],fails=[];
+  if(!film)return {info,fails:['manca il titolo del film']};
+  const big=s=>s.replace(/\._V1_[^.]*\.(jpg|png)/i,'._V1_.$1');
+
+  /* IMDb (con ripiego JSONP se il blocco CORS impedisce la chiamata diretta) */
+  let hit=null;
+  const d=await imdbSuggest(film.toLowerCase());
+  if(d===null)fails.push('IMDb non raggiungibile da questa pagina (ho usato Wikidata/Wikipedia)');
+  else{
+    const tt=d.filter(x=>x.id&&x.id.startsWith('tt'));
+    hit=tt.find(x=>(x.l||'').toLowerCase()===film.toLowerCase())||tt[0]||null;
+    if(hit){
+      if(!$('imdb').value)$('imdb').value='https://www.imdb.com/title/'+hit.id+'/';
+      if(!$('anno').value&&hit.y)$('anno').value=String(hit.y);
+      if(!$('cast').value&&hit.s)$('cast').value=hit.s;
+      info.push('IMDb: «'+hit.l+'» ('+(hit.y||'anno?')+')');
+    }
+  }
+
+  /* Wikidata: completa ciò che manca (e verifica il film tramite il regista) */
+  let wd=null;
+  try{wd=await wikidataFilm(film,$('regista').value.trim());}catch(e){fails.push('Wikidata non raggiungibile');}
+  if(wd){
+    if(!$('imdb').value&&wd.imdb)$('imdb').value='https://www.imdb.com/title/'+wd.imdb+'/';
+    if(!$('anno').value&&wd.anno)$('anno').value=wd.anno;
+    if(!$('durata').value&&wd.durata)$('durata').value=wd.durata+"'";
+    if(!$('cast').value&&wd.cast&&wd.cast.length)$('cast').value=wd.cast.join(', ');
+    if(!$('regista').value&&wd.regista)$('regista').value=wd.regista;
+    if(!$('trailerIt').value&&wd.ytIt){$('trailerIt').value='https://www.youtube.com/watch?v='+wd.ytIt;info.push('trailer italiano trovato su Wikidata');}
+    if(!$('trailerOrig').value&&wd.ytOrig){$('trailerOrig').value='https://www.youtube.com/watch?v='+wd.ytOrig;info.push('trailer ufficiale trovato su Wikidata');}
+    syncTrailer(!$('trailerSel').dataset.touched);
+    info.push('Wikidata: «'+(wd.label||film)+'»'+(wd.desc?' ('+wd.desc+')':''));
+  }
+  if($('imdb').value||$('anno').value||$('cast').value)$('a3').style.display='inline';
+  /* controlli di coerenza sulle fonti */
+  const reg0=$('regista').value.trim();
+  if(wd&&reg0&&wd.desc&&!wd.desc.toLowerCase().includes(reg0.split(' ').pop().toLowerCase()))
+    fails.push('Wikidata descrive \u00ab'+wd.label+'\u00bb come \u00ab'+wd.desc+'\u00bb: controlla che sia il film giusto e non un omonimo');
+  if(hit&&wd&&hit.y&&wd.anno&&String(hit.y)!==String(wd.anno))
+    fails.push('anno discordante tra IMDb ('+hit.y+') e Wikidata ('+wd.anno+'): verifica');
+  const durN=parseInt($('durata').value)||0;
+  if(durN&&(durN<40||durN>240))fails.push('durata insolita ('+$('durata').value+'): verificala');
+
+  /* durata via SPARQL se ancora vuota e conosco l'id IMDb */
+  const ttid=($('imdb').value.match(/tt\d+/)||[])[0];
+  if(!$('durata').value&&ttid){
+    try{
+      const sq='SELECT ?d WHERE { ?f wdt:P345 "'+ttid+'". ?f wdt:P2047 ?d. } LIMIT 1';
+      const w=await (await fetch('https://query.wikidata.org/sparql?format=json&query='+encodeURIComponent(sq),{headers:{Accept:'application/sparql-results+json'}})).json();
+      const b=w.results.bindings[0];
+      if(b)$('durata').value=mins(parseFloat(b.d.value))+"'";
+    }catch(e){}
+  }
+
+  /* iTunes Store: durata e locandina di riserva */
+  let itn=null;
+  try{
+    const its=await itunesFilm(film);
+    if(its&&its.length){
+      const fl=film.toLowerCase(),rl=$('regista').value.trim().toLowerCase();
+      itn=its.find(x=>(x.trackName||'').toLowerCase()===fl&&(!rl||(x.artistName||'').toLowerCase().includes(rl)))
+        ||its.find(x=>(x.trackName||'').toLowerCase().includes(fl))||null;
+      if(itn){
+        if(!$('durata').value&&itn.trackTimeMillis)$('durata').value=mins(itn.trackTimeMillis/60000)+"'";
+        if(!$('anno').value&&itn.releaseDate)$('anno').value=itn.releaseDate.slice(0,4);
+      }
+    }
+  }catch(e){}
+
+  /* proposte per l'immagine in evidenza (fino a 3) */
+  $('cands').innerHTML='';state.cands=[];state.img1=null;state.img1label='';
+  const urls=[];
+  if(hit&&hit.i&&hit.i.imageUrl)urls.push({u:big(hit.i.imageUrl),l:'Locandina (IMDb)'});
+  if(hit&&hit.v)hit.v.forEach(v=>{if(v.i&&v.i.imageUrl)urls.push({u:big(v.i.imageUrl),l:'Fotogramma dal video (IMDb)'});});
+  if(wd&&wd.wiki){
+    try{
+      const w=await (await fetch('https://'+wd.wiki.l+'.wikipedia.org/w/api.php?action=query&prop=pageimages&piprop=original&format=json&origin=*&titles='+encodeURIComponent(wd.wiki.t))).json();
+      const pg=w.query&&w.query.pages&&Object.values(w.query.pages)[0];
+      if(pg&&pg.original&&pg.original.source)urls.push({u:pg.original.source,l:'Locandina (Wikipedia)'});
+    }catch(e){}
+  }
+  if(wd&&wd.commons)urls.push({u:'https://commons.wikimedia.org/wiki/Special:FilePath/'+encodeURIComponent(wd.commons)+'?width=1800',l:'Immagine (Wikimedia)'});
+  if(itn&&itn.artworkUrl100)urls.push({u:itn.artworkUrl100.replace(/100x100bb/,'2000x2000bb'),l:'Locandina (iTunes)'});
+  const trm=$('trailer').value.trim().match(/(?:v=|youtu\.be\/|shorts\/)([\w-]{6,})/);
+  if(trm)urls.push(...ytFrames(trm[1]));
+  let added=0;const seenSize=new Set();
+  for(const it of urls){
+    if(added>=6)break;
+    try{
+      const r=await fetch(it.u);if(!r.ok)throw 0;
+      const blob=await r.blob();if(blob.size<5000||seenSize.has(blob.size))throw 0;
+      seenSize.add(blob.size);
+      const media=await processImage(blob,document.createElement('div'),FRATIO);
+      addCand(media,it.l,false);added++;
+    }catch(e){}
+  }
+  if(added){
+    const pref=state.cands.find(c=>c.label.startsWith('Fotogramma'))||state.cands[0];
+    pick(pref);$('a5').style.display='inline';
+    info.push(added>1?added+' immagini proposte (scegline una al passo 5)':'1 immagine proposta');
+  }else if(urls.length)fails.push('immagini trovate ma non scaricabili da questa pagina: carica un file al passo 5');
+  else fails.push('nessuna immagine trovata in rete: carica un file al passo 5');
+
+  /* «Leggi anche» dal sito */
+  try{
+    const site=$('site').value.replace(/\/+$/,'');
+    const dec=s=>{const ta=document.createElement('textarea');ta.innerHTML=s;return ta.value;};
+    const reg=$('regista').value.trim();
+    let posts=[];
+    if(reg)posts=await (await fetch(site+'/wp-json/wp/v2/posts?search='+encodeURIComponent(reg)+'&per_page=4&_fields=link,title')).json();
+    posts=(posts||[]).filter(p=>!dec(p.title.rendered).toLowerCase().includes(film.toLowerCase()));
+    if(posts.length<2){
+      const cs=await (await fetch(site+'/wp-json/wp/v2/categories?search=Recensioni&_fields=id,name')).json();
+      const c=(cs||[]).find(x=>x.name==='Recensioni');
+      if(c){const more=await (await fetch(site+'/wp-json/wp/v2/posts?categories='+c.id+'&per_page=4&_fields=link,title')).json();
+        (more||[]).forEach(p=>{if(posts.length<2&&!dec(p.title.rendered).toLowerCase().includes(film.toLowerCase())&&!posts.find(x=>x.link===p.link))posts.push(p);});}
+    }
+    if(posts[0]&&!$('la1u').value){$('la1u').value=posts[0].link;$('la1t').value=dec(posts[0].title.rendered);}
+    if(posts[1]&&!$('la2u').value){$('la2u').value=posts[1].link;$('la2t').value=dec(posts[1].title.rendered);}
+    if(posts.length)info.push('«Leggi anche» proposti dal sito');
+  }catch(e){fails.push('sito non raggiungibile per i «Leggi anche»');}
+
+  /* SEO dalle prime frasi */
+  const reg2=$('regista').value.trim();
+  const firstJ=state.paras.find(p=>p.align==='justify');   /* salta epigrafi e versi */
+  const seoSrc=firstJ?firstJ.text:bodyText();
+  const sent=((seoSrc.match(/[^.!?«»]{30,200}[.!?]/)||[seoSrc.slice(0,150)])[0]||'').trim();
+  if(film&&reg2&&sent){
+    if(!$('metaDesc').dataset.touched){
+      let md='Recensione di '+film+' di '+reg2+': '+sent;
+      if(md.length>158){md=md.slice(0,155);md=md.slice(0,md.lastIndexOf(' '))+'…';}
+      $('metaDesc').value=md;
+    }
+    if(!$('excerpt').dataset.touched){
+      const ex=buildExcerpt(film,reg2);
+      if(ex)$('excerpt').value=ex;
+    }
+    $('a6').style.display='inline';
+  }
+  syncMeta();$('btnCheck').click();
+  return {info,fails};
+}
+$('btnAuto').onclick=async()=>{
+  if(!$('film').value.trim()&&state.paras.length){
+    const det=detectFilm();
+    if(det){$('film').value=det.film;if(det.reg&&!$('regista').value)$('regista').value=det.reg;syncMeta();}
+  }
+  if(!$('film').value.trim()){msg('mAuto','err','Scrivi almeno il titolo del film qui sopra (non sono riuscito a rilevarlo dal testo).');return;}
+  msg('mAuto','ok','Cerco in rete…');
+  const res=await autofill();
+  const head=res.info.length?'Compilato: '+res.info.join('; ')+'. ':'Nessun dato trovato in rete: compila i campi a mano. ';
+  msg('mAuto',res.fails.length?'warn':'ok',head+(res.fails.length?'Attenzione: '+res.fails.join('; ')+'.':''));
+};
+
+/* ---------- campi derivati ---------- */
+function slugify(s){return s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/['\u2018\u2019]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');}
+function syncMeta(){
+  const f=$('film').value.trim(),r=$('regista').value.trim(),a=$('anno').value.trim();
+  if(f&&r&&!$('slug').dataset.touched)$('slug').value=slugify(f+' di '+r);
+  if(f&&!$('kw').dataset.touched)$('kw').value=f;
+  if(f&&r&&!$('seoTitle').dataset.touched)$('seoTitle').value=f+(a?' ('+a+')':'')+': recensione del film di '+r;
+  $('prevTitle').textContent=f&&r?f+' di '+r:'—';
+  if(f){$('ytSearchIt').href='https://www.youtube.com/results?search_query='+encodeURIComponent((f+' '+r+' trailer italiano').trim());
+    $('ytSearchOrig').href='https://www.youtube.com/results?search_query='+encodeURIComponent((f+' '+r+' official trailer').trim());}
+  $('stLen').textContent=$('seoTitle').value.length+' car.';
+  $('mdLen').textContent=$('metaDesc').value.length+' car. (ideale 120–158)';
+}
+['film','regista','anno'].forEach(id=>$(id).addEventListener('input',syncMeta));
+function syncTrailer(auto){
+  const it=$('trailerIt').value.trim(),og=$('trailerOrig').value.trim();
+  if(auto)$('trailerSel').value=it?'it':'orig';
+  const v=$('trailerSel').value==='it'?it:og;
+  if($('trailer').value!==v){$('trailer').value=v;$('trailer').dispatchEvent(new Event('change'));}
+}
+['trailerIt','trailerOrig'].forEach(id=>$(id).addEventListener('change',()=>syncTrailer(!$('trailerSel').dataset.touched)));
+$('trailerSel').addEventListener('change',()=>{$('trailerSel').dataset.touched=1;syncTrailer(false);});
+$('trailer').addEventListener('change',async()=>{
+  if(state.paras.length)renderParas();
+  const m=$('trailer').value.trim().match(/(?:v=|youtu\.be\/|shorts\/)([\w-]{6,})/);
+  if(!m)return;
+  if(!state.cands.find(c=>c.label==='Fotogramma dal trailer')){
+    let added=0;
+    for(const it of ytFrames(m[1])){
+      if(added>=4)break;
+      try{const r=await fetch(it.u);if(!r.ok)continue;const b=await r.blob();
+        if(b.size<5000||state.cands.some(c=>c.media.blob.size===b.size))continue;
+        const media=await processImage(b,document.createElement('div'),FRATIO);
+        addCand(media,it.l,!state.img1&&added===0);added++;}catch(e){}
+    }
+    if(added)$('a5').style.display='inline';
+  }
+  $('btnCheck').click();
+});
+['slug','kw','seoTitle','excerpt','metaDesc'].forEach(id=>{
+  $(id).addEventListener('input',e=>{e.target.dataset.touched=1;syncMeta();});});
+
+/* ---------- immagini ---------- */
+function loadImage(blob){return new Promise((ok,ko)=>{const u=URL.createObjectURL(blob);const im=new Image();im.onload=()=>ok(im);im.onerror=ko;im.src=u;});}
+const FRATIO=768/539; /* formato dell'immagine in evidenza del tema */
+async function processImage(blob,info,ratio){
+  const im=await loadImage(blob);
+  let c=document.createElement('canvas');c.width=im.naturalWidth;c.height=im.naturalHeight;
+  let x=c.getContext('2d');x.drawImage(im,0,0);
+  const d=x.getImageData(0,0,c.width,c.height).data,W=c.width,H=c.height;
+  const rm=y=>{let s=0;for(let i=0;i<W;i+=4){const k=(y*W+i)*4;s+=d[k]+d[k+1]+d[k+2];}return s/(W/4)/3;};
+  const cm=q=>{let s=0;for(let i=0;i<H;i+=4){const k=(i*W+q)*4;s+=d[k]+d[k+1]+d[k+2];}return s/(H/4)/3;};
+  let t=0,b=H-1,l=0,r=W-1;
+  while(t<H/3&&rm(t)<14)t++;while(b>H*2/3&&rm(b)<14)b--;
+  while(l<W/3&&cm(l)<14)l++;while(r>W*2/3&&cm(r)<14)r--;
+  if(t>0)t+=3;if(b<H-1)b-=3;if(l>0)l+=2;if(r<W-1)r-=2;
+  let sw=r-l+1,sh=b-t+1;
+  if(ratio){ /* ritaglio al formato richiesto, centrato (un po' più in alto nei tagli verticali) */
+    if(sw/sh>ratio){const nw=Math.round(sh*ratio);l+=Math.floor((sw-nw)/2);sw=nw;}
+    else{const nh=Math.round(sw/ratio);t+=Math.round((sh-nh)*0.4);sh=nh;}
+  }
+  const w=Math.min(ratio?1536:2400,sw),h=ratio?Math.round(w/ratio):Math.round(sh*w/sw);
+  const c2=document.createElement('canvas');c2.width=w;c2.height=h;
+  c2.getContext('2d').drawImage(im,l,t,sw,sh,0,0,w,h);
+  let out=null;
+  for(const q of [0.97,0.95,0.93,0.9,0.87,0.84,0.8,0.75,0.7]){
+    out=await new Promise(z=>c2.toBlob(z,'image/jpeg',q));
+    if(out.size<=500*1024)break;
+  }
+  const kb=Math.round(out.size/1024);
+  info.textContent=w+'×'+h+' px'+(ratio?' (formato 768×539)':'')+', '+kb+' KB'+(w<1200?' — risoluzione bassa per un’immagine in evidenza':'')+(kb<200?' — sotto i 200 KB: se puoi usa un’immagine più grande':'')+(t>0||l>0?' (bande nere rimosse)':'');
+  return {blob:out,w,h,url:URL.createObjectURL(out)};
+}
+function addCand(media,label,sel){
+  state.cands=state.cands||[];
+  const c={media,label};state.cands.push(c);
+  const d=document.createElement('div');d.className='cand';
+  d.innerHTML='<img src="'+media.url+'"><div class="cl">'+esc(label)+' · '+media.w+'×'+media.h+' · '+Math.round(media.blob.size/1024)+' KB</div>';
+  d.onclick=()=>pick(c);
+  $('cands').appendChild(d);c.el=d;
+  if(sel)pick(c);
+}
+function pick(c){
+  state.img1=c.media;state.img1label=c.label;
+  [...$('cands').children].forEach(x=>x.classList.remove('sel'));
+  c.el.classList.add('sel');
+  $('img1i').textContent='Scelta: '+c.label+' ('+c.media.w+'×'+c.media.h+', '+Math.round(c.media.blob.size/1024)+' KB)';
+}
+$('img1').onchange=async e=>{if(!e.target.files[0])return;const media=await processImage(e.target.files[0],document.createElement('div'),FRATIO);addCand(media,'Caricata da te',true);$('a5').style.display='none';};
+$('img2').onchange=async e=>{if(!e.target.files[0])return;state.img2=await processImage(e.target.files[0],$('img2i'));$('img2p').src=state.img2.url;$('img2p').style.display='block';};
+
+/* ---------- struttura ---------- */
+function renderParas(){
+  const el=$('parList');el.innerHTML='';
+  if(!state.paras.length)return;
+  state.split=Math.min(state.split,Math.max(0,state.paras.length-2));
+  const mk=(cls,html)=>{const d=document.createElement('div');d.className=cls;d.innerHTML=html;return d;};
+  const OPT='<option value="justify">giustificato</option><option value="center">centrato</option><option value="right">a destra</option><option value="left">a sinistra</option>';
+  el.appendChild(mk('blkhead','Primo blocco'));
+  state.paras.forEach((p,i)=>{
+    const d=mk('pv','<span class="txt" title="clicca per leggere tutto"></span><select title="allineamento del paragrafo">'+OPT+'</select>');
+    d.querySelector('.txt').textContent=p.text;
+    d.querySelector('.txt').onclick=ev=>ev.target.classList.toggle('open');
+    const s=d.querySelector('select');s.value=p.align;s.onchange=()=>p.align=s.value;
+    el.appendChild(d);
+    if(i<state.paras.length-1){
+      if(i===state.split){
+        const what=$('trailer').value.trim()?'il trailer':'il trailer (o la seconda immagine)';
+        el.appendChild(mk('sep on','<span class="ln"></span><span>\u25B6 Qui va '+what+'</span><span class="ln"></span>'));
+        el.appendChild(mk('blkhead','Secondo blocco'));
+      }else{
+        const sp=mk('sep','<span class="ln"></span><span>sposta qui</span><span class="ln"></span>');
+        sp.onclick=()=>{state.split=i;renderParas();};
+        el.appendChild(sp);
+      }
+    }
+  });
+}
+
+/* ---------- verifiche ---------- */
+function bodyText(){return state.paras.map(p=>p.text).join(' ');}
+function checks(){
+  const f=$('film').value.trim(),kw=$('kw').value.trim().toLowerCase();
+  const txt=bodyText();const low=txt.toLowerCase();
+  const words=txt.split(/\s+/).filter(Boolean).length;
+  const occ=kw?low.split(kw).length-1:0;
+  const first10=kw&&low.slice(0,Math.max(200,low.length/10)).includes(kw);
+  const md=$('metaDesc').value,st=$('seoTitle').value,ex=$('excerpt').value,sl=$('slug').value;
+  return [
+    ['Almeno 600 parole ('+words+')',words>=600],
+    ['Titolo del film nelle prime righe',first10],
+    ['Titolo del film nel testo almeno 5 volte ('+occ+')',occ>=5],
+    ['Parola chiave nel titolo SEO',kw&&st.toLowerCase().includes(kw)],
+    ['Titolo SEO ≤ 60 caratteri ('+st.length+')',st.length>0&&st.length<=60],
+    ['Parola chiave nella meta descrizione',kw&&md.toLowerCase().includes(kw)],
+    ['Meta descrizione 80–158 caratteri ('+md.length+')',md.length>=80&&md.length<=158],
+    ['Riassunto che contiene il titolo del film',f&&ex.toLowerCase().includes(f.toLowerCase())],
+    ['Permalink con titolo e autore',kw&&sl.includes(slugify(f))],
+    ['Immagine in evidenza pronta',!!state.img1],
+    ['Seconda immagine o trailer',!!state.img2||!!$('trailer').value.trim()],
+    ['Scheda tecnica: link IMDb indicato',!!$('imdb').value.trim()],
+    ['«Leggi anche»: almeno un link interno',!!$('la1u').value.trim()],
+  ];
+}
+$('btnCheck').onclick=()=>{
+  const el=$('checks');el.innerHTML='';
+  checks().forEach(([t,ok])=>{const d=document.createElement('div');if(ok)d.className='pass';d.textContent=t;el.appendChild(d);});
+  predictSEO();
+};
+function predictSEO(){
+  const kw=$('kw').value.trim().toLowerCase(),f=$('film').value.trim();
+  if(!kw||!state.paras.length){$('predict').innerHTML='';return;}
+  const txt=bodyText(),low=txt.toLowerCase();
+  const words=txt.split(/\s+/).filter(Boolean).length;
+  const occ=low.split(kw).length-1;
+  const dens=words?occ*kw.split(/\s+/).length/words*100:0;
+  const st=$('seoTitle').value.toLowerCase(),md=$('metaDesc').value.toLowerCase(),sl=$('slug').value;
+  const hasTrailer=!!$('trailer').value.trim();
+  /* pesi di Rank Math, calibrati sui punteggi reali misurati (58/74/75) */
+  const items=[
+    [32,st.includes(kw)],
+    [2, md.includes(kw)],
+    [5, f&&sl.includes(slugify(f))],
+    [3, low.slice(0,Math.max(200,low.length/10)).includes(kw)],
+    [2, occ>0],
+    [words>=600?8:(words>=300?4:0), true],
+    [3, true],
+    [2, !!state.img1],
+    [dens>=1&&dens<=2.5?6:(dens>=0.5?3:0), true],
+    [4, sl.length<=75],
+    [4, !!$('imdb').value.trim()],
+    [2, !!$('imdb').value.trim()],
+    [5, !!$('la1u').value.trim()],
+    [3, st.indexOf(kw)===0],
+    [1, /\d/.test($('seoTitle').value)],
+    [3, !state.paras.some(p=>p.text.split(/\s+/).length>150)],
+    [6, !!state.img2||hasTrailer],
+  ];
+  const s=Math.min(100,items.reduce((a,x)=>a+(x[1]?x[0]:0),0));
+  const lo=Math.max(0,s-7);
+  done(6,lo>=70);
+  $('predict').innerHTML='Punteggio SEO previsto: <b>'+lo+'\u2013'+s+' / 100</b>'
+    +'<div class="hint">Stima con i pesi di Rank Math: il conteggio vero lo fa Rank Math nella bozza (obiettivo 70+, minimo 55). Densit\u00e0 parola chiave: '+dens.toFixed(2)+'%'
+    +(dens<0.5?' \u2014 bassa: 1\u20132 occorrenze in pi\u00f9 del titolo nel testo valgono fino a 6 punti':'')
+    +'. Non conteggiati: \u00abpower word\u00bb (Rank Math riconosce quasi solo termini inglesi) e indice dei contenuti.</div>';
+}
+
+/* ---------- composizione contenuto ---------- */
+function paraHTML(p){
+  let html='<p style="text-align: '+p.align+';">',open=false,italic=false;
+  const openSpan=()=>{html+=SP;open=true;};
+  const closeSpan=()=>{if(open){html+='</span>';open=false;}};
+  p.runs.forEach(r=>{
+    const t=esc(r.t).replace(/\n/g,'<br />');if(!t)return;
+    if(r.i!==italic){closeSpan();if(italic)html+='</i>';if(r.i)html+='<i>';italic=r.i;}
+    if(!open)openSpan();
+    html+=r.b?'<b>'+t+'</b>':t;
+  });
+  closeSpan();if(italic)html+='</i>';
+  return html+'</p>';
+}
+function figureHTML(m,film,reg){
+  const cap=esc(film+' di '+reg);
+  return '<figure id="attachment_'+m.id+'" class="wp-caption aligncenter" style="width: '+m.width+'px"><img class="size-large wp-image-'+m.id+'" src="'+m.src+'" alt="'+cap+'" width="'+m.width+'" height="'+m.height+'" /><figcaption class="wp-caption-text">'+cap+'</figcaption></figure>';
+}
+function buildContent(media2){
+  const film=$('film').value.trim(),reg=$('regista').value.trim();
+  const p1=state.paras.slice(0,state.split+1).map(paraHTML).join('\n');
+  let p2=state.paras.slice(state.split+1).map(paraHTML).join('\n');
+  const anno=$('anno').value.trim(),dur=$('durata').value.trim(),imdb=$('imdb').value.trim(),cast=$('cast').value.trim();
+  const mode=$('schedaMode').value;
+  const sty=mode==='discreta'?' style="font-size: 15px; color: #8a8a8a;"':'';
+  const pst=mode==='discreta'?'text-align: left; font-size: 14px; color: #8a8a8a;':'text-align: left;';
+  const h3='<h3'+sty+'>Scheda tecnica di '+esc(film)+'</h3>';
+  let body='<p style="'+pst+'"><i>'+SP
+    +(imdb?'<a href="'+imdb+'" target="_blank" rel="noopener">'+esc(film)+'</a>':esc(film))
+    +'</span></i>'+SP+' ('+[anno,dur].filter(Boolean).join(', ')+') – Regia: '+esc(reg)+'.'
+    +(cast?' Interpreti: '+esc(cast)+'.':'')+'</span></p>';
+  const la=[[$('la1u').value.trim(),$('la1t').value.trim()],[$('la2u').value.trim(),$('la2t').value.trim()]].filter(x=>x[0]);
+  if(la.length){body+='\n<p style="'+pst+'">'+SP+'Leggi anche: </span>'
+    +la.map(x=>'<a href="'+x[0]+'">'+SP+esc(x[1]||x[0])+'</span></a>').join(SP+'; </span>')+SP+'.</span></p>';}
+  const scheda=mode==='richiudibile'
+    ?'\n<details><summary>'+h3.replace('<h3>','<h3 style="display: inline;">')+'</summary>\n'+body+'\n</details>'
+    :'\n'+h3+'\n'+body;
+  const tr=$('trailer').value.trim();
+  if(media2&&!tr)p2=figureHTML(media2,film,reg)+'\n'+p2;
+  else if(media2&&tr){
+    const arr=state.paras.slice(state.split+1);const mid=Math.ceil(arr.length/2);
+    p2=arr.slice(0,mid).map(paraHTML).join('\n')+'\n'+figureHTML(media2,film,reg)+'\n'+arr.slice(mid).map(paraHTML).join('\n');}
+  /* stessa struttura degli articoli pubblicati: blocco 1 | container 2 = [colonna trailer] + colonna testo */
+  return TPL.A+'\n'+p1+'\n'+TPL.B+(tr?TPL.YT.replace('{{YT}}',tr):'')+TPL.C+'\n'+p2+scheda+'\n'+TPL.D;
+}
+
+/* ---------- creazione ---------- */
+const L=t=>{const e=$('log');e.style.display='block';e.textContent+=t+'\n';e.scrollTop=1e9;};
+async function term(base,name){
+  const q=await api('/wp/v2/'+base+'?search='+encodeURIComponent(name)+'&per_page=50');
+  const hit=q.find(x=>x.name.toLowerCase()===name.toLowerCase());
+  if(hit)return hit.id;
+  const n=await api('/wp/v2/'+base,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name})});
+  return n.id;
+}
+async function upload(media,slugBase,cap){
+  const site=$('site').value.replace(/\/+$/,'');
+  const r=await fetch(site+'/wp-json/wp/v2/media',{method:'POST',headers:{
+    Authorization:'Basic '+state.auth,'Content-Type':'image/jpeg',
+    'Content-Disposition':'attachment; filename="'+slugBase+'.jpg"'},body:media.blob});
+  if(!r.ok)throw new Error('upload immagine: HTTP '+r.status);
+  const j=await r.json();
+  await api('/wp/v2/media/'+j.id,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({alt_text:cap,title:cap,caption:cap})});
+  const s=(j.media_details&&j.media_details.sizes&&(j.media_details.sizes.large||j.media_details.sizes.full))||null;
+  return {id:j.id,src:s?s.source_url:j.source_url,width:s?s.width:media.w,height:s?s.height:media.h};
+}
+/* ---------- bozze esistenti ---------- */
+async function loadDrafts(){
+  const sel=$('selDraft');sel.innerHTML='<option>carico…</option>';sel.style.display='';$('destHint').style.display='block';
+  try{
+    const ds=await api('/wp/v2/posts?status=draft&author='+state.me.id+'&per_page=20&orderby=modified&_fields=id,title,modified');
+    const dec=s=>{const t=document.createElement('textarea');t.innerHTML=s;return t.value;};
+    sel.innerHTML=(ds&&ds.length)?ds.map(d=>'<option value="'+d.id+'">#'+d.id+' · '+dec((d.title&&d.title.rendered)||'(senza titolo)')+' · mod. '+d.modified.slice(0,10)+'</option>').join(''):'<option value="">nessuna tua bozza trovata</option>';
+  }catch(e){sel.innerHTML='<option value="">errore: '+e.message+'</option>';}
+}
+$('dest').onchange=()=>{
+  if($('dest').value==='upd'){
+    if(!state.auth){msg('mGo','err','Prima verifica l’accesso (passo 1).');$('dest').value='new';return;}
+    loadDrafts();
+  }else{$('selDraft').style.display='none';$('destHint').style.display='none';}
+};
+
+/* ---------- salvataggio del lavoro in corso (senza password) ---------- */
+const WKEY='sp_pub_work';
+const WFIELDS=['site','user','gdoc','film','regista','anno','durata','cast','imdb','trailer','trailerIt','trailerOrig','trailerSel','schedaMode','slug','la1u','la1t','la2u','la2t','kw','seoTitle','metaDesc','excerpt'];
+function saveWork(){try{
+  const o={t:Date.now(),f:{},tou:{},paste:$('paste').innerHTML,paras:state.paras,split:state.split};
+  WFIELDS.forEach(id=>{o.f[id]=$(id).value;if($(id).dataset.touched)o.tou[id]=1;});
+  localStorage.setItem(WKEY,JSON.stringify(o));
+}catch(e){}}
+let wkT;document.addEventListener('input',()=>{clearTimeout(wkT);wkT=setTimeout(saveWork,800);});
+(function restoreWork(){try{
+  const raw=localStorage.getItem(WKEY);if(!raw)return;
+  const o=JSON.parse(raw);if(!o||!o.t)return;
+  const bar=document.createElement('div');bar.className='msg warn';bar.style.display='block';bar.style.margin='0 0 16px';
+  bar.innerHTML='Trovato un lavoro in corso del '+new Date(o.t).toLocaleString('it-IT')+'. '
+    +'<button class="sec" id="wkY" style="margin:0 6px;padding:5px 12px">Riprendi</button>'
+    +'<button class="sec" id="wkN" style="margin:0;padding:5px 12px">Scarta</button>';
+  document.querySelector('.wrap').prepend(bar);
+  bar.querySelector('#wkN').onclick=()=>{try{localStorage.removeItem(WKEY)}catch(e){}bar.remove();};
+  bar.querySelector('#wkY').onclick=()=>{
+    for(const id in o.f){const el=$(id);if(el){el.value=o.f[id];if(o.tou[id])el.dataset.touched=1;}}
+    $('paste').innerHTML=o.paste||'';if(o.f.trailerSel)$('trailerSel').dataset.touched=1;
+    state.paras=o.paras||[];state.split=o.split||0;
+    if(state.paras.length)renderParas();
+    syncMeta();if(state.paras.length)$('btnCheck').click();
+    bar.remove();
+    msg('mParse','warn','Lavoro ripristinato. Reinserisci l’Application Password al passo 1; le immagini non si conservano tra le sessioni: premi «Compila automaticamente» per riavere le proposte o ricaricale.');
+  };
+}catch(e){}})();
+
+$('btnGo').onclick=async()=>{
+  $('log').textContent='';$('final').innerHTML='';
+  const manual=[];
+  try{
+    if(!state.auth)throw new Error('prima verifica l’accesso (passo 1)');
+    if(!state.paras.length)throw new Error('prima leggi il testo (passo 2)');
+    const film=$('film').value.trim(),reg=$('regista').value.trim();
+    if(!film||!reg)throw new Error('indica titolo del film e regista (passo 3)');
+    if(!state.img1)throw new Error('serve l’immagine in evidenza (passo 5)');
+    const bad=checks().filter(x=>!x[1]);
+    if(bad.length&&!confirm('Verifiche non superate:\n– '+bad.map(x=>x[0]).join('\n– ')+'\n\nCreare comunque la bozza?'))return;
+    const cap=film+' di '+reg;
+    const updId=$('dest').value==='upd'?(parseInt($('selDraft').value)||0):0;
+    if($('dest').value==='upd'&&!updId)throw new Error('scegli quale bozza aggiornare');
+
+    if(!updId){
+    L('Controllo che la recensione non esista già…');
+    try{
+      const dec0=s=>{const t=document.createElement('textarea');t.innerHTML=s;return t.value;};
+      const dup=await api('/wp/v2/posts?status=publish,draft,pending&search='+encodeURIComponent(film)+'&per_page=5&_fields=title,link,status');
+      const hitd=(dup||[]).find(p=>dec0(p.title.rendered).toLowerCase().startsWith(film.toLowerCase()));
+      if(hitd&&!confirm('Sul sito esiste già «'+dec0(hitd.title.rendered)+'» (stato: '+hitd.status+').\nCreare comunque una nuova bozza?'))
+        {msg('mGo','warn','Creazione annullata: esiste già un articolo su questo film.');return;}
+    }catch(e){}
+    }
+    L('Categoria «Recensioni»…');
+    const cats=await api('/wp/v2/categories?search=Recensioni');
+    const cat=cats.find(c=>c.name==='Recensioni');if(!cat)throw new Error('categoria «Recensioni» non trovata');
+
+    L('Tag: '+film+', '+reg+'…');
+    const tags=[await term('tags',film),await term('tags',reg)];
+
+    const extra={};
+    for(const [k,label] of [['director','Regista'],['starring','Interpreti']]){
+      if(!state.tax[k]){manual.push(label+': da selezionare/aggiungere a mano nel box di WordPress');continue;}
+      try{
+        const names=k==='director'?[reg]:$('cast').value.split(',').map(s=>s.trim()).filter(Boolean);
+        if(!names.length){manual.push(label+': nessun nome indicato');continue;}
+        extra[state.tax[k]]=[];for(const n of names)extra[state.tax[k]].push(await term(state.tax[k],n));
+        L(label+': ok ('+names.join(', ')+')');
+      }catch(e){manual.push(label+': impossibile via API ('+e.message+') — aggiungi a mano');}
+    }
+
+    L('Carico immagine in evidenza…');
+    const m1=await upload(state.img1,$('slug').value||slugify(cap),cap);
+    let m2=null;
+    if(state.img2){L('Carico seconda immagine…');m2=await upload(state.img2,($('slug').value||slugify(cap))+'-2',cap);}
+
+    L(updId?'Compongo l’articolo e aggiorno la bozza #'+updId+'…':'Compongo l’articolo e creo la bozza…');
+    const body={status:'draft',title:cap,slug:$('slug').value||slugify(cap),
+      excerpt:$('excerpt').value.trim(),content:buildContent(m2),
+      categories:[cat.id],tags,featured_media:m1.id,
+      meta:{rank_math_focus_keyword:$('kw').value.trim(),
+            rank_math_title:$('seoTitle').value.trim()+' %sep% %sitename%',
+            rank_math_description:$('metaDesc').value.trim()}};
+    Object.assign(body,extra);
+    const post=await api('/wp/v2/posts'+(updId?'/'+updId:''),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+
+    /* Rank Math: 1) meta già inviati col post; 2) API propria di Rank Math; 3) valori da copiare */
+    const rmVals={kw:$('kw').value.trim(),title:$('seoTitle').value.trim(),desc:$('metaDesc').value.trim()};
+    let rmOk=false;
+    try{const chk=(await api('/wp/v2/posts/'+post.id+'?context=edit')).meta||{};rmOk=!!chk.rank_math_focus_keyword;}catch(e){}
+    if(!rmOk){
+      L('Rank Math: provo la sua API interna…');
+      try{
+        await api('/rankmath/v1/updateMeta',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({objectID:post.id,objectType:'post',
+            meta:{rank_math_focus_keyword:rmVals.kw,rank_math_title:rmVals.title+' %sep% %sitename%',rank_math_description:rmVals.desc}})});
+        rmOk=true;L('Rank Math: impostato via API interna.');
+        manual.push('Rank Math: parola chiave, titolo e descrizione sono stati inviati — aprendo la bozza verifica che il riquadro Rank Math li mostri');
+      }catch(e){L('Rank Math: API interna non disponibile ('+e.message+')');}
+    }
+    let rmHTML='';
+    if(!rmOk){
+      rmHTML='<div class="rmfix"><b>Rank Math — incolla questi valori nel riquadro della bozza:</b>'
+        +[['Parola chiave',rmVals.kw],['Titolo SEO',rmVals.title],['Meta descrizione',rmVals.desc]]
+        .map(x=>'<div class="rmrow"><span>'+x[0]+'</span><input readonly value="'+x[1].replace(/"/g,'&quot;')+'"><button class="sec cp" type="button">Copia</button></div>').join('')
+        +'</div>';
+    }
+    if(!$('trailer').value.trim())manual.push('Trailer: quando disponibile, aggiungi l’elemento YouTube tra i due blocchi');
+    if(state.img1label.startsWith('Locandina'))manual.push('Come immagine in evidenza è stata scelta una locandina: valuta se un fotogramma non renda meglio in anteprima');
+    manual.push('Aprendo la bozza, nella scheda Visuale dell\u2019editor compaiono righe come [fusion_builder\u2026]: sono la struttura del tema, non eliminarle. Per ritocchi al testo usa la scheda Codice o il Live Builder');
+    manual.push('Riassunto e meta descrizione sono generati con regole automatiche, non da un’IA: rileggili e ritoccali se suonano male. Controlla poi il punteggio Rank Math (obiettivo 70+, minimo 55) e l’anteprima, e lascia in bozza per la revisione');
+
+    const edit=$('site').value.replace(/\/+$/,'')+'/wp-admin/post.php?post='+post.id+'&action=edit';
+    L((updId?'Aggiornata':'Fatto')+'. Bozza #'+post.id);
+    msg('mGo','ok',updId?'Bozza #'+updId+' aggiornata (le versioni precedenti restano nelle revisioni di WordPress).':'Bozza creata (non pubblicata).');done(7);try{localStorage.removeItem(WKEY)}catch(e){}
+    state.created={post:post.id,media:[m1.id].concat(m2?[m2.id]:[])};
+    $('final').innerHTML='<p><a href="'+edit+'" target="_blank">Apri la bozza in WordPress →</a></p>'+rmHTML
+      +'<b>Da completare a mano:</b><ul class="todo">'+manual.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'
+      +'<button id="btnDel" type="button">Elimina questa bozza (per le prove)</button>';
+    $('final').querySelectorAll('.cp').forEach(b=>{b.onclick=()=>{const inp=b.previousElementSibling;inp.select();
+      navigator.clipboard.writeText(inp.value).then(()=>{b.textContent='Copiato';setTimeout(()=>b.textContent='Copia',1500);})
+      .catch(()=>{document.execCommand('copy');b.textContent='Copiato';setTimeout(()=>b.textContent='Copia',1500);});};});
+    const bd=document.getElementById('btnDel');
+    bd.onclick=async()=>{
+      if(!confirm('Spostare la bozza #'+state.created.post+' nel cestino ed eliminare le immagini appena caricate?'))return;
+      bd.disabled=true;
+      try{
+        await api('/wp/v2/posts/'+state.created.post,{method:'DELETE'});
+        for(const id of state.created.media){try{await api('/wp/v2/media/'+id+'?force=true',{method:'DELETE'});}catch(e){}}
+        msg('mGo','ok','Bozza spostata nel cestino (recuperabile da WordPress) e immagini eliminate. Puoi rifare la prova.');
+        $('final').innerHTML='';done(7,false);
+      }catch(e){bd.disabled=false;msg('mGo','err','Eliminazione non riuscita: '+e.message);}
+    };
+  }catch(e){
+    L('ERRORE: '+e.message);
+    msg('mGo','err',e.message);
+  }
+};
+</script>
+</body>
+</html>
