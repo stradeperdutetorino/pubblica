@@ -1,0 +1,1939 @@
+<!DOCTYPE html>
+<!--
+  Strade Perdute · Pubblica recensione
+  Versione 2.0 — 1 ottobre 2026
+  Da questa versione ogni modifica incrementa il numero (1.1, 1.2, …)
+  e viene annotata qui.
+  2.0 — algoritmi rivisti. Riconoscimento del film anche con TMDB (facoltativo,
+        chiave gratuita): titoli italiano/originale, verifica del regista dalla
+        sua filmografia, durata, paese, cast, trailer italiano e fotogrammi in
+        alta qualità. Immagini: ritaglio «intelligente» che segue soggetti e volti
+        invece del centro, compressione mirata (200–500 KB alla massima qualità
+        possibile), download in parallelo e niente doppioni (confronto visivo).
+        Divisione dei due blocchi a metà del testo (mai prima di un'epigrafe);
+        seconda immagine scelta da sola quando manca il trailer; «Leggi anche»
+        per regista e interpreti in comune; meta descrizione senza tagli;
+        tempo massimo su ogni ricerca in rete.
+  1.4 — registi, interpreti e tag: prima di crearli li cerca sul sito (per slug,
+        nome e cognome, ignorando accenti e trattini), così non si creano doppioni;
+        film omonimi: punteggio su regista (Wikidata), anno e contesto festival,
+        con elenco «Film individuato» per scegliere; lettura del programma del
+        festival (PDF); paese nella scheda tecnica.
+  1.3 — «Messaggio alla redazione» in testa all’app: la nota sulle nuove
+        regole SEO, aperta alla prima visita di ogni versione.
+  1.2 — pronta per la pubblicazione online: la pagina chiede ai motori di
+        ricerca di non essere indicizzata (noindex).
+  1.1 — container identici agli articoli pubblicati (trailer come colonna
+        nel secondo container, come nella recensione di Ozon); scelta tra
+        trailer italiano e ufficiale (italiano predefinito se c'è, da Wikidata);
+        scheda tecnica visibile / richiudibile / discreta.
+  1.0 — prima versione stabile: importazione da Google Doc/Word/PDF/testo,
+        rilevamento titolo e regista dal testo, dati film da IMDb/Wikidata/iTunes,
+        fino a 6 proposte di immagine (formato 768×539), riassunto «da vetrina»,
+        previsione SEO calibrata, salvataggio lavoro in corso, aggiorna bozza,
+        controllo doppioni, eliminazione bozza di prova.
+-->
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Strade Perdute · Pubblica recensione</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&display=swap">
+<style>
+:root{--ink:#211f1c;--mut:#75726a;--acc:#8a2d1f;--acc2:#a8402f;--ok:#2f6b3a;--warn:#a97507;--err:#a02020;--bg:#f3f1ea;--card:#fffdf8;--line:#ddd9cf;--soft:#eceadf}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Sora',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:14.5px;line-height:1.5}
+.top{background:var(--ink);color:#f5f3ee;padding:26px 16px 22px}
+.top .in{max-width:900px;margin:0 auto}
+.wordmark{font-weight:300;font-size:27px;letter-spacing:.05em}
+.wordmark b{font-weight:600}
+.top .sub{color:#b9b5ac;font-size:13.5px;margin-top:8px;max-width:75ch}
+.top .sub b{color:#fff;font-weight:600}
+.wrap{max-width:900px;margin:0 auto;padding:24px 16px 90px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:18px;box-shadow:0 1px 3px rgba(40,35,25,.05)}
+.card h2{font-size:15.5px;font-weight:600;margin:0 0 12px;color:var(--ink);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.card h2 .n{flex:0 0 auto;background:var(--acc);color:#fff;border-radius:50%;width:24px;height:24px;text-align:center;line-height:24px;font-size:12.5px;font-weight:600}
+.card.done h2 .n{background:var(--ok)}
+label{display:block;font-size:12.5px;color:var(--mut);margin:12px 0 4px}
+input[type=text],input[type=password],input[type=url],textarea,select{width:100%;padding:9px 11px;border:1.5px solid var(--line);border-radius:8px;font:inherit;font-size:13.5px;background:#fff;transition:border-color .15s,box-shadow .15s}
+input:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(138,45,31,.08)}
+textarea{min-height:95px;resize:vertical;line-height:1.45}
+button{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:10px 18px;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;margin-top:12px;transition:background .15s}
+button:hover{background:var(--acc2)}
+button.sec{background:transparent;color:var(--acc);border:1.5px solid var(--acc)}
+button.sec:hover{background:rgba(138,45,31,.06)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:14px;flex-wrap:wrap}.row>div{flex:1;min-width:180px}
+.msg{margin-top:10px;font-size:13px;border-radius:8px;padding:9px 12px;display:none}
+.msg.ok{display:block;background:#e8f2ea;color:var(--ok)}
+.msg.err{display:block;background:#f7e5e5;color:var(--err)}
+.msg.warn{display:block;background:#f7efd9;color:var(--warn)}
+.hint{font-size:12.5px;color:var(--mut);margin-top:6px}
+.hint a{color:var(--acc)}
+.paste{border:1.5px dashed var(--line);border-radius:10px;min-height:120px;max-height:300px;overflow:auto;padding:12px;background:#fff;font-size:13.5px}
+.paste:empty:before{content:"\2026oppure incolla qui il testo copiato dal documento (i corsivi si conservano)";color:#aaa}
+#parList{max-height:460px;overflow:auto;padding-right:4px}
+.blkhead{font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--mut);margin:12px 2px 6px;text-transform:uppercase}
+.pv{background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin-bottom:6px;display:flex;gap:12px;align-items:flex-start}
+.pv .txt{flex:1;font-size:13px;color:#3a3833;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+.pv .txt.open{-webkit-line-clamp:unset}
+.pv select{width:auto;font-size:12px;padding:4px 6px;flex:0 0 auto}
+.sep{display:flex;align-items:center;gap:10px;margin:4px 0;cursor:pointer;color:var(--mut);font-size:11.5px;opacity:.5;user-select:none}
+.sep:hover{opacity:1;color:var(--acc)}
+.sep .ln{flex:1;border-top:1.5px dashed currentColor}
+.sep.on{opacity:1;color:#fff;background:var(--acc);border-radius:8px;padding:8px 14px;font-weight:600;font-size:12.5px;margin:8px 0;cursor:default}
+.sep.on .ln{border-top:1.5px solid rgba(255,255,255,.35)}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;font-size:13px}
+.checks div:before{content:"\2715  ";color:var(--err);font-weight:700}
+.checks div.pass:before{content:"\2713  ";color:var(--ok)}
+#log{font-family:ui-monospace,monospace;font-size:12.5px;background:#20201e;color:#ddd;border-radius:10px;padding:12px;max-height:260px;overflow:auto;display:none;white-space:pre-wrap;margin-top:12px}
+.imgprev{max-width:100%;max-height:220px;border-radius:8px;border:1px solid var(--line);margin-top:8px;display:none}
+.cands{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
+.cand{border:2.5px solid var(--line);border-radius:12px;padding:7px;cursor:pointer;width:200px;text-align:center;background:#fff;transition:border-color .15s,transform .1s}
+.cand:hover{transform:translateY(-2px)}
+.cand.sel{border-color:var(--acc);box-shadow:0 3px 10px rgba(138,45,31,.18)}
+.cand.sel .cl:before{content:"\2713 scelta \00b7 ";color:var(--ok);font-weight:700}
+.cand img{max-width:100%;max-height:150px;border-radius:7px;display:block;margin:0 auto}
+.cand .cl{font-size:11px;color:var(--mut);margin-top:5px}
+.badge{font-size:11px;background:var(--soft);border:1px solid var(--line);border-radius:5px;padding:2px 7px;color:var(--mut);font-weight:400}
+.auto{font-size:11px;color:var(--ok);display:none;font-weight:400}
+.predict{margin-top:14px;font-size:14px;border-top:1px solid var(--line);padding-top:12px}
+.predict b{font-size:24px;color:var(--acc)}
+.final a{color:var(--acc);font-weight:600}
+.final{margin-top:10px}
+ul.todo{margin:8px 0 0 18px;padding:0}
+.adv{margin-top:16px;border-top:1px solid var(--line);padding-top:10px}
+.adv>summary{cursor:pointer;font-size:12.5px;color:var(--mut);font-weight:600;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.adv[open]>summary{color:var(--acc)}
+.badge.on{color:var(--ok);border-color:#bcd8c2;background:#eef6f0}
+.foot2{text-align:center;font-size:11.5px;color:var(--mut);margin-top:22px;line-height:1.6}
+ul.todo li{margin-bottom:4px;font-size:13.5px}
+
+.nota{padding:0;overflow:hidden}
+.nota>summary{list-style:none;cursor:pointer;padding:16px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.nota>summary::-webkit-details-marker{display:none}
+.nota>summary .k{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--acc)}
+.nota>summary .t{font-weight:600;font-size:15px;flex:1;min-width:220px}
+.nota>summary .o{font-size:12.5px;color:var(--acc);font-weight:600;white-space:nowrap}
+.nota[open]>summary .o{font-size:0}.nota[open]>summary .o:after{content:"chiudi \25B4";font-size:12.5px}
+.nota:not([open])>summary .o:after{content:" \25BE"}
+.nota .nb{padding:0 22px 22px;border-top:1px solid var(--line);font-size:14px;line-height:1.55}
+.nota .nb .lede{color:var(--mut);font-size:14.5px;margin:14px 0 6px}
+.nota .nb .meta{font-size:12.5px;color:var(--mut);border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:10px}
+.nota .nb h2{font-size:15.5px;font-weight:600;margin:24px 0 10px}
+.nota .nb h2 .num{color:var(--acc);margin-right:8px;font-weight:700}
+.nota .nb p,.nota .nb ul{max-width:70ch}
+.nota .score{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:12px 0}
+.nota .score div{flex:1;padding:10px 14px;background:#fff}
+.nota .score div+div{border-left:1px solid var(--line)}
+.nota .score b{font-size:19px;display:block;font-variant-numeric:tabular-nums}
+.nota .score span{font-size:11.5px;color:var(--mut)}
+.nota .score .last b{color:var(--acc)}
+.nota .tblwrap{overflow-x:auto}
+.nota table{border-collapse:collapse;width:100%;font-size:13px;margin:10px 0}
+.nota th{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;text-align:left;color:var(--mut);font-weight:600;padding:7px 9px;border-bottom:2px solid var(--ink)}
+.nota td{padding:8px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+.nota td.si{color:var(--ok);font-weight:600;white-space:nowrap}
+.nota td.no{color:var(--acc);font-weight:600;white-space:nowrap}
+.nota .note{background:var(--soft);border-left:3px solid var(--acc);border-radius:0 8px 8px 0;padding:10px 14px;font-size:13.5px;margin:12px 0;max-width:70ch}
+.nota ul{padding-left:20px}
+.nota li{margin-bottom:6px}
+.nota li::marker{color:var(--acc)}
+.nota .step{display:flex;gap:12px;margin-bottom:10px;max-width:72ch}
+.nota .step .sn{font-weight:700;color:var(--acc);min-width:18px;text-align:right}
+.nota .foot{margin-top:24px;padding-top:12px;border-top:1px solid var(--line);font-size:12px;color:var(--mut)}
+@media (max-width:520px){.nota .score{flex-direction:column}.nota .score div+div{border-left:0;border-top:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<div class="top"><div class="in">
+<div class="wordmark">strade perdute <b>· pubblica recensione</b> <span style="font-size:12px;font-weight:400;color:#b9b5ac;letter-spacing:.08em;vertical-align:middle">v 2.0</span></div>
+<div class="sub">Ti servono solo <b>le tue credenziali</b> e <b>la recensione</b> (link o file): dati del film, immagini e SEO vengono cercati in rete e compilati da soli — a te resta il controllo. Viene creata una <b>bozza</b>: nulla è pubblicato.</div>
+</div></div>
+<div class="wrap">
+
+<details class="card nota" id="nota">
+<summary><span class="k">Messaggio alla redazione</span><span class="t">Come cambia la scrittura SEO delle recensioni</span><span class="o">leggi</span></summary>
+<div class="nb">
+<p class="lede">Le norme della «Guida al Blog e alla scrittura SEO» restano tutte valide. Questa nota documenta i passaggi aggiunti sopra di esse, provati sulla recensione di <i>Chat Chat Show</i> di Xavier Tesson, e ora incorporati nell'app di caricamento per i redattori.</p>
+<div class="meta">28 settembre 2026 · caso di prova: <i>Chat Chat Show</i> (bozza) · campione di confronto: 4 recensioni pubblicate a settembre 2026</div>
+
+<h2><span class="num">1</span>Il risultato sul caso di prova</h2>
+<div class="score">
+  <div><b>58 / 100</b><span>Rank Math seguendo solo la guida attuale</span></div>
+  <div><b>74 / 100</b><span>con scheda tecnica, link e metadati</span></div>
+  <div class="last"><b>75 / 100</b><span>con seconda immagine e ritocchi</span></div>
+</div>
+<p>La soglia della guida (55) era già superata; il salto vero lo hanno prodotto quattro elementi meccanici che la guida non prevede: la scheda tecnica con link a IMDb, i link interni, la meta descrizione e l'alt dell'immagine con la parola chiave. I ritocchi al testo hanno inciso poco sul punteggio: il testo resta dell'autore.</p>
+
+<h2><span class="num">2</span>I passaggi nuovi, in aggiunta alla guida</h2>
+<div class="step"><span class="sn">1</span><div><b>Scheda tecnica in coda all'articolo</b>, con sottotitolo H3 «Scheda tecnica di <i>Titolo</i>»: anno, durata, regia, interpreti, e il titolo del film linkato alla sua pagina IMDb. Da sola risolve tre controlli di Rank Math (parola chiave in un sottotitolo, link esterno, link DoFollow). Può essere visibile (predefinito), richiudibile al clic o discreta in grigio: tutte e tre valgono per la SEO. Mai invisibile (testo dello stesso colore dello sfondo): Google lo tratta come testo nascosto e può penalizzare l'intero sito.</div></div>
+<div class="step"><span class="sn">2</span><div><b>«Leggi anche»</b> sotto la scheda: uno o due link ad articoli affini della rivista. Vale anche al contrario: quando esce una recensione nuova, aggiungere un link verso di essa da un articolo già ben letto.</div></div>
+<div class="step"><span class="sn">3</span><div><b>Titolo SEO e meta descrizione scritti a mano</b> nel riquadro Rank Math: titolo con la parola chiave in testa e l'anno tra parentesi — es. «Chat Chat Show (2026): recensione del film» — e descrizione di 120–158 caratteri che contiene la parola chiave. Il titolo sul sito resta nella forma della guida, «Titolo del film di Autore».</div></div>
+<div class="step"><span class="sn">4</span><div><b>Riassunto (excerpt) in stile vetrina</b>, sui 200–230 caratteri: due o tre parole-tema, poi una frase di giudizio che contiene il titolo del film — es. «Verità, estetica. Europa Centrale è un film ambizioso…». È il testo che accompagna le anteprime sui social e in home.</div></div>
+<div class="step"><span class="sn">5</span><div><b>Un fotogramma anche dentro il testo</b>, oltre all'immagine in evidenza, con alt e didascalia «Titolo di Autore». Risolve il controllo «rich media». Se il trailer non è ancora disponibile, il fotogramma prende il suo posto tra i due blocchi.</div></div>
+<div class="step"><span class="sn">6</span><div><b>Titolo del film ripetuto 5–6 volte</b> nel corpo (densità ~0,5%), in punti naturali: la guida chiede solo che compaia nelle prime due righe. Nessuna riscrittura: al massimo un «il film» diventa il titolo.</div></div>
+
+<h2><span class="num">3</span>Dove ci si discosta dalla guida</h2>
+<ul>
+<li><b>Trailer non più bloccante.</b> La guida lo dà per obbligatorio tra i due paragrafi; se non esiste ancora, si pubblica con il secondo fotogramma al suo posto e si aggiunge il trailer appena esce.</li>
+<li><b>Punteggio SEO: obiettivo 70+, non 55+.</b> La soglia 55 resta il minimo, ma con i passaggi qui sopra si arriva a 70–75 senza toccare la prosa.</li>
+<li>Tutto il resto della guida è confermato: titolo «Film di Autore», due blocchi di testo, categoria, tag solo titolo e autore, regista e interpreti indicizzati, immagine 200–500 KB con testo alternativo, titolo e didascalia, permalink con titolo e autore, parola chiave = titolo del film, salvataggio <b>in bozza</b>.</li>
+</ul>
+
+<h2><span class="num">4</span>Confronto con la prassi attuale</h2>
+<p>Campione: le quattro recensioni più recenti di altri autori (settembre 2026: <i>The Invite</i>, <i>I figli della scimmia</i>, <i>The Echo Chamber</i>, <i>M – il mostro di Düsseldorf</i>).</p>
+<div class="tblwrap">
+<table>
+<tr><th>Pratica</th><th>Campione attuale</th><th>Nuova indicazione</th></tr>
+<tr><td>Trailer tra i due blocchi</td><td class="si">4 su 4</td><td>Confermata (o fotogramma se manca)</td></tr>
+<tr><td>Meta descrizione presente</td><td class="si">4 su 4</td><td>Confermata; con parola chiave in testa</td></tr>
+<tr><td>Almeno 600 parole</td><td class="no">3 su 4</td><td>Da verificare prima del caricamento (una era a ~490)</td></tr>
+<tr><td>Scheda tecnica con link IMDb</td><td class="no">0 su 4</td><td><b>Nuova</b></td></tr>
+<tr><td>Link esterni nel testo</td><td class="no">0 su 4</td><td><b>Nuova</b> (via scheda tecnica)</td></tr>
+<tr><td>Link interni «Leggi anche»</td><td class="no">1 link in 4 articoli</td><td><b>Nuova</b>: 1–2 per articolo</td></tr>
+<tr><td>Immagini dentro il testo</td><td class="no">0 su 4</td><td><b>Nuova</b>: un fotogramma nel corpo</td></tr>
+<tr><td>Titolo SEO personalizzato</td><td class="no">0 su 4 (titolo predefinito)</td><td><b>Nuova</b>: con anno e «recensione»</td></tr>
+</table>
+</div>
+
+<h2><span class="num">5</span>L'app per i redattori</h2>
+<p>I passaggi qui sopra sono automatizzati in questa app («Strade Perdute · Pubblica recensione»). All'autore servono solo due cose: le proprie credenziali — una <b>Application Password</b> creata dal proprio profilo WordPress, revocabile in ogni momento; mai la password dell'account — e la recensione, come link a un Google Doc, file Word o PDF, o testo incollato. Tutto il resto viene compilato da solo:</p>
+<ul>
+<li>titolo del film e regista letti dalla prima riga, o rilevati dal testo se la prima riga manca; testo diviso nei due blocchi, con corsivi e allineamenti conservati (dal PDF i corsivi sono ricostruiti e vanno ricontrollati);</li>
+<li>anno, interpreti, durata, paese e pagina IMDb recuperati automaticamente da TMDB (se attivo), IMDb, Wikidata e iTunes; trailer italiano o ufficiale (l'italiano è predefinito quando esiste); per l'immagine in evidenza fino a sei proposte senza doppioni (fotogrammi e locandine da TMDB, IMDb, Wikipedia, iTunes e dal trailer) tra cui l'autore sceglie con un clic, o sostituisce con un proprio file — ogni immagine è ritagliata delle bande nere, portata al formato del tema 768×539 seguendo i soggetti (volti, dettagli) invece del semplice centro, e compressa tra 200 e 500 KB alla massima qualità possibile, con alt, titolo e didascalia; se manca il trailer, la seconda immagine nel testo viene scelta da sola;</li>
+<li>registi, interpreti e tag già presenti sul sito vengono riconosciuti anche se scritti in modo diverso (accenti, trattini, iniziali, ordine nome-cognome): nessun doppione, e cliccando su un nome si trovano tutte le sue recensioni; per i film omonimi l’app verifica regista e anno, propone l’elenco dei candidati e, per i film visti a un festival, legge il programma in PDF (regista, paese, anno, durata);</li>
+<li>scheda tecnica, «Leggi anche» proposti tra gli articoli del sito, permalink, tag, categoria, riassunto, titolo SEO e meta descrizione generati da soli, con una checklist di verifiche prima dell'invio: l'autore controlla e corregge solo dove serve;</li>
+<li>viene creata la <b>bozza</b> (mai una pubblicazione), con il riepilogo di ciò che resta da fare a mano.</li>
+</ul>
+<div class="note">Restano sempre manuali: la rilettura delle frasi generate (meta descrizione e riassunto), il controllo del punteggio Rank Math nella bozza, l'inserimento del trailer se assente, l'eventuale selezione di regista e interpreti quando l'API non li accetta, e la revisione redazionale prima della pubblicazione.</div>
+<div class="note"><b>Editor di WordPress:</b> aprendo la bozza, la scheda «Visuale» mostra righe grigie come <i>[fusion_builder_container…]</i>: sono la struttura del tema Avada, invisibile sul sito — non vanno toccate né eliminate. Per ritocchi al testo usare la scheda «Codice» o il Live Builder; salvare dalla Visuale può scartare modifiche fatte altrove.</div>
+
+<div class="foot">Preparato con il caporedattore a partire dalla lavorazione di <i>Chat Chat Show</i> · La «Guida al Blog e alla scrittura SEO» resta il riferimento per i passaggi di base.</div>
+</div>
+</details>
+<!-- 1 CREDENZIALI -->
+<div class="card">
+<h2><span class="n">1</span>Accesso</h2>
+<div class="row">
+<div><label>Sito</label><input type="url" id="site" value="https://stradeperdute.it"></div>
+<div><label>Nome utente WordPress</label><input type="text" id="user" autocomplete="username"></div>
+<div><label>Application Password</label><input type="password" id="pass" autocomplete="off" placeholder="xxxx xxxx xxxx xxxx xxxx xxxx"></div>
+</div>
+<div class="hint">Non usare la password del tuo account: crea una <b>Application Password</b> dal tuo Profilo WordPress (wp-admin → Profilo → «Application Passwords», nome a piacere, poi «Aggiungi»). Puoi revocarla in ogni momento. Le credenziali restano in questa pagina e vengono inviate solo al sito indicato qui sopra.</div>
+<button id="btnLogin">Verifica accesso</button>
+<div class="msg" id="mLogin"></div>
+<details class="adv" id="adv"><summary>Impostazioni avanzate · fonte dati TMDB <span class="badge" id="tmdbState">non attiva</span></summary>
+<label>Chiave API di TMDB (facoltativa, gratuita)</label>
+<div class="row" style="align-items:center">
+<div><input type="password" id="tmdbKey" autocomplete="off" placeholder="incolla qui la «Chiave API» (v3)"></div>
+<div style="flex:0 0 auto"><button class="sec" id="btnTmdb" style="margin-top:0">Verifica e salva</button></div>
+</div>
+<div class="hint">Con TMDB (The Movie Database) l’app riconosce meglio i film — anche con il titolo originale o quando ci sono omonimi — e trova durata, paese, interpreti, trailer italiano e fotogrammi in alta qualità. La chiave si ottiene gratis da <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noopener">themoviedb.org → Impostazioni → API</a> e resta salvata solo in questo browser. Se la redazione l’ha già configurata per tutti, qui risulta «attiva» e non serve fare nulla. Senza chiave l’app funziona comunque con IMDb, Wikidata e iTunes.</div>
+<div class="msg" id="mTmdb"></div>
+</details>
+</div>
+
+<!-- 2 TESTO -->
+<div class="card">
+<h2><span class="n">2</span>Recensione</h2>
+<div class="row">
+<div><label>Link al Google Doc (condiviso «chiunque abbia il link»)</label><input type="url" id="gdoc" placeholder="https://docs.google.com/document/d/…"></div>
+<div style="flex:0"><label>&nbsp;</label><button class="sec" id="btnGdoc" style="margin-top:0">Importa</button></div>
+</div>
+<label>Oppure carica un file (Word .docx, PDF, testo)</label>
+<input type="file" id="docfile" accept=".docx,.doc,.pdf,.txt,.html,.htm">
+<div class="hint">Dal Word i corsivi si conservano; dal PDF vengono ricostruiti ma vanno ricontrollati. Con un vecchio .doc: salvalo come .docx oppure incolla il testo. La prima riga deve essere il titolo nella forma <b>«Titolo del film di Regista»</b>.</div>
+<label>Anteprima / incolla</label>
+<div class="paste" id="paste" contenteditable="true"></div>
+<button id="btnParse">Leggi il testo e compila tutto</button>
+<div class="msg" id="mParse"></div>
+</div>
+
+<!-- 3 DATI FILM -->
+<div class="card">
+<h2><span class="n">3</span>Dati del film <span class="auto" id="a3">compilati automaticamente — controlla</span></h2>
+<div class="row">
+<div><label>Titolo del film</label><input type="text" id="film"></div>
+<div><label>Regista</label><input type="text" id="regista"></div>
+<div><label>Paese</label><input type="text" id="paese" placeholder="Francia"></div>
+<div><label>Anno</label><input type="text" id="anno" placeholder="2026"></div>
+<div><label>Durata</label><input type="text" id="durata" placeholder="84'"></div>
+</div>
+<div id="filmPick" style="display:none"><label>Film individuato (se ci sono più film con lo stesso titolo, scegli quello giusto)</label><select id="filmSel"></select></div>
+<label>Programma del festival (facoltativo) — per i film visti a un festival: l’app ne ricava regista, paese, anno e durata</label>
+<div class="row" style="align-items:center">
+<div><input type="url" id="progUrl" placeholder="Link al PDF del programma"></div>
+<div style="flex:0 0 auto"><input type="file" id="progFile" accept=".pdf"></div>
+<div style="flex:0 0 auto"><button class="sec" id="btnProg" style="margin-top:0">Leggi programma</button></div>
+</div>
+<div class="msg" id="mProg"></div>
+<div class="row">
+<div><label>Interpreti principali (separati da virgola)</label><input type="text" id="cast"></div>
+<div><label>Pagina IMDb del film (per la scheda tecnica)</label><input type="url" id="imdb" placeholder="https://www.imdb.com/title/tt…"></div>
+</div>
+<div class="row">
+<div><label>Trailer da inserire</label>
+<select id="trailerSel"><option value="it">Trailer italiano</option><option value="orig">Trailer ufficiale (lingua originale)</option></select>
+<input type="hidden" id="trailer">
+<div class="row" style="gap:8px;margin-top:6px">
+<div><input type="text" id="trailerIt" placeholder="Trailer italiano: https://www.youtube.com/watch?v=…"><div class="hint"><a id="ytSearchIt" href="https://www.youtube.com" target="_blank" rel="noopener">cerca il trailer italiano ↗</a></div></div>
+<div><input type="text" id="trailerOrig" placeholder="Trailer ufficiale: https://www.youtube.com/watch?v=…"><div class="hint"><a id="ytSearchOrig" href="https://www.youtube.com" target="_blank" rel="noopener">cerca il trailer ufficiale ↗</a></div></div>
+</div>
+<div class="hint">Cercati su Wikidata quando registrati. Se c'è il trailer italiano è scelto in automatico; altrimenti si usa quello ufficiale.</div></div>
+<div><label>Permalink (generato)</label><input type="text" id="slug"></div>
+</div>
+<label>Scheda tecnica in fondo all'articolo</label>
+<select id="schedaMode" style="width:auto"><option value="visibile">Visibile (predefinita)</option><option value="richiudibile">Richiudibile — si apre al clic su «Scheda tecnica»</option><option value="discreta">Discreta — carattere piccolo e grigio</option></select>
+<div class="hint">Tutte e tre le forme contano per la SEO. Non è prevista una scheda invisibile (testo dello stesso colore dello sfondo): Google la considera testo nascosto e può penalizzare l'intero sito.</div>
+<label>«Leggi anche» — proposti automaticamente dal sito, correggibili</label>
+<div class="row"><div><input type="url" id="la1u" placeholder="URL articolo 1"></div><div><input type="text" id="la1t" placeholder="Titolo da mostrare"></div></div>
+<div class="row"><div><input type="url" id="la2u" placeholder="URL articolo 2"></div><div><input type="text" id="la2t" placeholder="Titolo da mostrare"></div></div>
+<button class="sec" id="btnAuto">Compila automaticamente (dati, immagini, SEO)</button>
+<div class="msg" id="mAuto"></div>
+<div class="hint">Questo bottone rifà la ricerca in rete: utile se hai corretto titolo o regista, o se la prima compilazione non era riuscita.</div>
+</div>
+
+<!-- 4 STRUTTURA -->
+<div class="card">
+<h2><span class="n">4</span>Struttura <span class="badge">titolo articolo: <span id="prevTitle">—</span></span></h2>
+<div class="hint" style="margin-bottom:8px">L'articolo esce in <b>due blocchi</b> con il trailer (o la seconda immagine) in mezzo. La <b>barra rossa</b> mostra dove: per spostarla clicca su un'altra linea tratteggiata «sposta qui». Clicca un paragrafo per leggerlo per intero; il menu a lato corregge l'allineamento di epigrafi e versi.</div>
+<div id="parList"></div>
+</div>
+
+<!-- 5 IMMAGINI -->
+<div class="card">
+<h2><span class="n">5</span>Immagini <span class="auto" id="a5">proposte trovate in rete — clicca per scegliere</span></h2>
+<label>Immagine in evidenza — clicca su una proposta per sceglierla, oppure carica un tuo file</label>
+<div class="cands" id="cands"></div>
+<input type="file" id="img1" accept="image/*"><div class="hint" id="img1i"></div>
+<div class="row" style="margin-top:14px">
+<div>
+<label>Seconda immagine nel testo (risolve il controllo «rich media»): se manca il trailer viene scelta da sola tra le proposte</label>
+<input type="file" id="img2" accept="image/*"><img class="imgprev" id="img2p"><div class="hint" id="img2i"></div>
+<button class="sec" id="img2x" type="button" style="display:none;margin-top:8px;padding:6px 12px">Togli la seconda immagine</button>
+</div>
+</div>
+<div class="hint">Le proposte arrivano da TMDB (se attivo), IMDb, Wikipedia/Wikidata, iTunes e dai fotogrammi del trailer; le immagini uguali o quasi uguali vengono scartate. Un file caricato si aggiunge come proposta e viene selezionato. Ogni proposta viene ritagliata delle bande nere e portata al formato del tema (768×539) seguendo i soggetti dell’immagine, poi compressa tra 200 e 500 KB alla massima qualità possibile; alt, titolo e didascalia vengono impostati su «Titolo del film di Regista».</div>
+<div class="hint"><b>Diritti:</b> fotogrammi e locandine sono materiali promozionali dei distributori, usati a corredo di critica secondo la prassi editoriale. Quando disponibili, preferisci i materiali stampa ufficiali (cartella stampa del distributore o del festival); in caso di richiesta del titolare, l'immagine va sostituita o rimossa.</div>
+</div>
+
+<!-- 6 SEO -->
+<div class="card">
+<h2><span class="n">6</span>SEO <span class="auto" id="a6">generato con regole automatiche (non IA) — da ricontrollare</span></h2>
+<div class="row">
+<div><label>Parola chiave (= titolo del film)</label><input type="text" id="kw"></div>
+<div><label>Titolo SEO (solo per Google) <span class="badge" id="stLen"></span></label><input type="text" id="seoTitle"></div>
+</div>
+<label>Meta descrizione <span class="badge" id="mdLen"></span></label>
+<textarea id="metaDesc"></textarea>
+<label>Riassunto (excerpt: la vetrina dell'articolo — parole-tema e giudizio, con il titolo del film)</label>
+<textarea id="excerpt"></textarea>
+<div class="hint">⚠ Proposta generata con regole automatiche, <b>non da un'intelligenza artificiale</b>: monta frasi prese dalla recensione. Va sempre riletta e, se serve, riscritta prima di creare la bozza.</div>
+<button class="sec" id="btnCheck">Aggiorna verifiche</button>
+<div class="checks" id="checks" style="margin-top:10px"></div>
+<div class="predict" id="predict"></div>
+</div>
+
+<!-- 7 CREA -->
+<div class="card">
+<h2><span class="n">7</span>Crea la bozza</h2>
+<label>Destinazione</label>
+<div class="row">
+<div style="flex:0 0 auto"><select id="dest" style="width:auto"><option value="new">Nuova bozza</option><option value="upd">Aggiorna una mia bozza…</option></select></div>
+<div><select id="selDraft" style="display:none"></select></div>
+</div>
+<div class="hint" id="destHint" style="display:none">L'aggiornamento sovrascrive testo, titolo, immagine in evidenza, tag e campi SEO della bozza scelta con quanto preparato qui sopra. Permalink e ID restano gli stessi, e WordPress conserva le revisioni precedenti nello storico.</div>
+<button id="btnGo">Crea bozza su Strade Perdute</button>
+<div id="log"></div>
+<div class="msg" id="mGo"></div>
+<div class="final" id="final"></div>
+</div>
+<div class="foot2">Strade Perdute · Pubblica recensione · v <span id="verFoot">2.0</span><br>Dati e immagini dei film da IMDb, Wikidata/Wikipedia, iTunes e TMDB. Questo prodotto usa le API di TMDB ma non è approvato né certificato da TMDB.</div>
+</div>
+
+<script>
+"use strict";
+const APP_VERSION='2.0';
+/* ---------- costanti markup Avada / Sora ---------- */
+const SP='<span style="font-weight: 300; font-family: Sora;" data-fusion-font="true" data-fusion-google-font="Sora" data-fusion-google-variant="300">';
+
+/* modello esatto dei container (dalla recensione di Ozon, stradeperdute.it) */
+const TPL={"A": "[fusion_builder_container type=\"flex\" hundred_percent=\"no\" hundred_percent_height=\"no\" hundred_percent_height_scroll=\"no\" align_content=\"stretch\" flex_align_items=\"flex-start\" flex_justify_content=\"flex-start\" flex_wrap=\"wrap\" hundred_percent_height_center_content=\"yes\" equal_height_columns=\"no\" container_tag=\"div\" hide_on_mobile=\"small-visibility,medium-visibility,large-visibility\" status=\"published\" padding_right_small=\"0px\" padding_left_small=\"0px\" border_style=\"solid\" box_shadow=\"no\" box_shadow_blur=\"0\" box_shadow_spread=\"0\" gradient_start_position=\"0\" gradient_end_position=\"100\" gradient_type=\"linear\" radial_direction=\"center center\" linear_angle=\"180\" background_position=\"center center\" background_repeat=\"no-repeat\" fade=\"no\" background_parallax=\"none\" enable_mobile=\"no\" parallax_speed=\"0.3\" background_blend_mode=\"none\" background_slider_skip_lazy_loading=\"no\" background_slider_loop=\"yes\" background_slider_pause_on_hover=\"no\" background_slider_slideshow_speed=\"5000\" background_slider_animation=\"fade\" background_slider_direction=\"up\" background_slider_animation_speed=\"800\" video_aspect_ratio=\"16:9\" video_loop=\"yes\" video_mute=\"yes\" pattern_bg=\"none\" pattern_bg_style=\"default\" pattern_bg_opacity=\"100\" pattern_bg_blend_mode=\"normal\" mask_bg=\"none\" mask_bg_style=\"default\" mask_bg_opacity=\"100\" mask_bg_transform=\"left\" mask_bg_blend_mode=\"normal\" absolute=\"off\" absolute_devices=\"small,medium,large\" sticky=\"off\" sticky_devices=\"small-visibility,medium-visibility,large-visibility\" sticky_transition_offset=\"0\" scroll_offset=\"0\" animation_direction=\"left\" animation_speed=\"0.3\" animation_delay=\"0\" filter_hue=\"0\" filter_saturation=\"100\" filter_brightness=\"100\" filter_contrast=\"100\" filter_invert=\"0\" filter_sepia=\"0\" filter_opacity=\"100\" filter_blur=\"0\" filter_hue_hover=\"0\" filter_saturation_hover=\"100\" filter_brightness_hover=\"100\" filter_contrast_hover=\"100\" filter_invert_hover=\"0\" filter_sepia_hover=\"0\" filter_opacity_hover=\"100\" filter_blur_hover=\"0\"][fusion_builder_row][fusion_builder_column type=\"1_1\" layout=\"1_1\" align_self=\"auto\" content_layout=\"column\" align_content=\"flex-start\" valign_content=\"flex-start\" content_wrap=\"wrap\" center_content=\"no\" column_tag=\"div\" target=\"_self\" hide_on_mobile=\"small-visibility,medium-visibility,large-visibility\" sticky_display=\"normal,sticky\" order_medium=\"0\" order_small=\"0\" margin_bottom_small=\"35px\" margin_bottom=\"65px\" padding_right_small=\"0px\" padding_left_small=\"0px\" padding_right=\"0px\" padding_left=\"0px\" hover_type=\"none\" border_style=\"solid\" box_shadow=\"no\" box_shadow_blur=\"0\" box_shadow_spread=\"0\" background_type=\"single\" gradient_start_position=\"0\" gradient_end_position=\"100\" gradient_type=\"linear\" radial_direction=\"center center\" linear_angle=\"180\" lazy_load=\"none\" background_position=\"left top\" background_repeat=\"no-repeat\" background_blend_mode=\"none\" background_slider_skip_lazy_loading=\"no\" background_slider_loop=\"yes\" background_slider_pause_on_hover=\"no\" background_slider_slideshow_speed=\"5000\" background_slider_animation=\"fade\" background_slider_direction=\"up\" background_slider_animation_speed=\"800\" sticky=\"off\" sticky_devices=\"small-visibility,medium-visibility,large-visibility\" absolute=\"off\" filter_type=\"regular\" filter_hover_element=\"self\" filter_hue_hover=\"0\" filter_saturation_hover=\"100\" filter_brightness_hover=\"100\" filter_contrast_hover=\"100\" filter_invert_hover=\"0\" filter_sepia_hover=\"0\" filter_opacity_hover=\"100\" filter_blur_hover=\"0\" filter_hue=\"0\" filter_saturation=\"100\" filter_brightness=\"100\" filter_contrast=\"100\" filter_invert=\"0\" filter_sepia=\"0\" filter_opacity=\"100\" filter_blur=\"0\" transform_type=\"regular\" transform_hover_element=\"self\" transform_scale_x_hover=\"1\" transform_scale_y_hover=\"1\" transform_translate_x_hover=\"0\" transform_translate_y_hover=\"0\" transform_rotate_hover=\"0\" transform_skew_x_hover=\"0\" transform_skew_y_hover=\"0\" transform_scale_x=\"1\" transform_scale_y=\"1\" transform_translate_x=\"0\" transform_translate_y=\"0\" transform_rotate=\"0\" transform_skew_x=\"0\" transform_skew_y=\"0\" transition_duration=\"300\" transition_easing=\"ease\" motion_effects=\"W10=\" scroll_motion_devices=\"small-visibility,medium-visibility,large-visibility\" animation_direction=\"left\" animation_speed=\"0.3\" animation_delay=\"0\" last=\"true\" border_position=\"all\" first=\"true\" min_height=\"\" link=\"\"][fusion_text content_alignment=\"justify\" disable_idd=\"no\" hide_on_mobile=\"small-visibility,medium-visibility,large-visibility\" sticky_display=\"normal,sticky\" html_attributes=\"W10=\" fusion_font_family_text_font=\"Sora\" fusion_font_variant_text_font=\"300\" font_size=\"20px\" line_height=\"32px\" animation_direction=\"left\" animation_speed=\"0.3\" animation_delay=\"0\"]", "B": "[/fusion_text][/fusion_builder_column][/fusion_builder_row][/fusion_builder_container][fusion_builder_container type=\"flex\" hundred_percent=\"no\" hundred_percent_height=\"no\" hundred_percent_height_scroll=\"no\" align_content=\"stretch\" flex_align_items=\"flex-start\" flex_justify_content=\"flex-start\" flex_wrap=\"wrap\" hundred_percent_height_center_content=\"yes\" equal_height_columns=\"no\" container_tag=\"div\" hide_on_mobile=\"small-visibility,medium-visibility,large-visibility\" status=\"published\" margin_bottom=\"45px\" padding_right_small=\"0px\" padding_left_small=\"0px\" border_style=\"solid\" box_shadow=\"no\" box_shadow_blur=\"0\" box_shadow_spread=\"0\" gradient_start_position=\"0\" gradient_end_position=\"100\" gradient_type=\"linear\" radial_direction=\"center center\" linear_angle=\"180\" background_position=\"center center\" background_repeat=\"no-repeat\" fade=\"no\" background_parallax=\"none\" enable_mobile=\"no\" parallax_speed=\"0.3\" background_blend_mode=\"none\" background_slider_skip_lazy_loading=\"no\" background_slider_loop=\"yes\" background_slider_pause_on_hover=\"no\" background_slider_slideshow_speed=\"5000\" background_slider_animation=\"fade\" background_slider_direction=\"up\" background_slider_animation_speed=\"800\" video_aspect_ratio=\"16:9\" video_loop=\"yes\" video_mute=\"yes\" pattern_bg=\"none\" pattern_bg_style=\"default\" pattern_bg_opacity=\"100\" pattern_bg_blend_mode=\"normal\" mask_bg=\"none\" mask_bg_style=\"default\" mask_bg_opacity=\"100\" mask_bg_transform=\"left\" mask_bg_blend_mode=\"normal\" absolute=\"off\" absolute_devices=\"small,medium,large\" sticky=\"off\" sticky_devices=\"small-visibility,medium-visibility,large-visibility\" sticky_transition_offset=\"0\" scroll_offset=\"0\" animation_direction=\"left\" animation_speed=\"0.3\" animation_delay=\"0\" filter_hue=\"0\" filter_saturation=\"100\" filter_brightness=\"100\" filter_contrast=\"100\" filter_invert=\"0\" filter_sepia=\"0\" filter_opacity=\"100\" filter_blur=\"0\" filter_hue_hover=\"0\" filter_saturation_hover=\"100\" filter_brightness_hover=\"100\" filter_contrast_hover=\"100\" filter_invert_hover=\"0\" filter_sepia_hover=\"0\" filter_opacity_hover=\"100\" filter_blur_hover=\"0\"][fusion_builder_row]", "YT": "[fusion_builder_column type=\"1_1\" layout=\"1_1\" align_self=\"auto\" content_layout=\"column\" align_content=\"flex-start\" valign_content=\"flex-start\" content_wrap=\"wrap\" center_content=\"no\" column_tag=\"div\" target=\"_self\" hide_on_mobile=\"small-visibility,medium-visibility,large-visibility\" sticky_display=\"normal,sticky\" order_medium=\"0\" order_small=\"0\" margin_bottom=\"0px\" padding_right=\"0px\" padding_left=\"0px\" hover_type=\"none\" border_style=\"solid\" box_shadow=\"no\" box_shadow_blur=\"0\" box_shadow_spread=\"0\" background_type=\"single\" gradient_start_position=\"0\" gradient_end_position=\"100\" gradient_type=\"linear\" radial_direction=\"center center\" linear_angle=\"180\" lazy_load=\"none\" background_position=\"left top\" background_repeat=\"no-repeat\" background_blend_mode=\"none\" background_slider_skip_lazy_loading=\"no\" background_slider_loop=\"yes\" background_slider_pause_on_hover=\"no\" background_slider_slideshow_speed=\"5000\" background_slider_animation=\"fade\" background_slider_direction=\"up\" background_slider_animation_speed=\"800\" sticky=\"off\" sticky_devices=\"small-visibility,medium-visibility,large-visibility\" absolute=\"off\" filter_type=\"regular\" filter_hover_element=\"self\" filter_hue_hover=\"0\" filter_saturation_hover=\"100\" filter_brightness_hover=\"100\" filter_contrast_hover=\"100\" filter_invert_hover=\"0\" filter_sepia_hover=\"0\" filter_opacity_hover=\"100\" filter_blur_hover=\"0\" filter_hue=\"0\" filter_saturation=\"100\" filter_brightness=\"100\" filter_contrast=\"100\" filter_invert=\"0\" filter_sepia=\"0\" filter_opacity=\"100\" filter_blur=\"0\" transform_type=\"regular\" transform_hover_element=\"self\" transform_scale_x_hover=\"1\" transform_scale_y_hover=\"1\" transform_translate_x_hover=\"0\" transform_translate_y_hover=\"0\" transform_rotate_hover=\"0\" transform_skew_x_hover=\"0\" transform_skew_y_hover=\"0\" transform_scale_x=\"1\" transform_scale_y=\"1\" transform_translate_x=\"0\" transform_translate_y=\"0\" transform_rotate=\"0\" transform_skew_x=\"0\" transform_skew_y=\"0\" transition_duration=\"300\" transition_easing=\"ease\" motion_effects=\"W10=\" scroll_motion_devices=\"small-visibility,medium-visibility,large-visibility\" animation_direction=\"left\" animation_speed=\"0.3\" animation_delay=\"0\" last=\"true\" border_position=\"all\" first=\"true\" min_height=\"\" link=\"\"][fusion_youtube id=\"{{YT}}\" width=\"600\" height=\"350\" autoplay=\"false\" mute=\"false\" loop=\"false\" controls=\"true\" thumbnail_size=\"auto\" video_facade_no_cookie=\"on\" hide_on_mobile=\"small-visibility,medium-visibility,large-visibility\" structured_data=\"off\" video_upload_date_timezone=\"-12:00\" /][/fusion_builder_column]", "C": "[fusion_builder_column type=\"1_1\" layout=\"1_1\" align_self=\"auto\" content_layout=\"column\" align_content=\"flex-start\" valign_content=\"flex-start\" content_wrap=\"wrap\" center_content=\"no\" target=\"_self\" hide_on_mobile=\"small-visibility,medium-visibility,large-visibility\" sticky_display=\"normal,sticky\" order_medium=\"0\" order_small=\"0\" hover_type=\"none\" border_style=\"solid\" box_shadow=\"no\" box_shadow_blur=\"0\" box_shadow_spread=\"0\" background_type=\"single\" gradient_start_position=\"0\" gradient_end_position=\"100\" gradient_type=\"linear\" radial_direction=\"center center\" linear_angle=\"180\" background_position=\"left top\" background_repeat=\"no-repeat\" background_blend_mode=\"none\" filter_type=\"regular\" filter_hue=\"0\" filter_saturation=\"100\" filter_brightness=\"100\" filter_contrast=\"100\" filter_invert=\"0\" filter_sepia=\"0\" filter_opacity=\"100\" filter_blur=\"0\" filter_hue_hover=\"0\" filter_saturation_hover=\"100\" filter_brightness_hover=\"100\" filter_contrast_hover=\"100\" filter_invert_hover=\"0\" filter_sepia_hover=\"0\" filter_opacity_hover=\"100\" filter_blur_hover=\"0\" animation_direction=\"left\" animation_speed=\"0.3\" margin_bottom=\"0 px\" margin_bottom_small=\"50px\" last=\"true\" border_position=\"all\" first=\"true\" padding_top=\"65px\" margin_top=\"0px\" min_height=\"\" link=\"\"][fusion_text content_alignment=\"justify\" disable_idd=\"no\" hide_on_mobile=\"small-visibility,medium-visibility,large-visibility\" sticky_display=\"normal,sticky\" html_attributes=\"W10=\" fusion_font_family_text_font=\"Sora\" fusion_font_variant_text_font=\"300\" font_size=\"20px\" line_height=\"32px\" animation_direction=\"left\" animation_speed=\"0.3\" animation_delay=\"0\"]", "D": "[/fusion_text][/fusion_builder_column][/fusion_builder_row][/fusion_builder_container]"};
+const $=id=>document.getElementById(id);
+const state={auth:null,me:null,paras:[],split:0,tax:{},img1:null,img1label:'',img2:null,img2auto:false,img2off:false,cands:[],tmdbKey:'',tmdbShared:'',busy:false};
+
+function msg(id,cls,t){const e=$(id);e.className='msg '+cls;e.textContent=t;}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+const scripts={};
+/* richieste in rete con un tempo massimo: una fonte lenta non blocca la compilazione */
+function fetchT(u,opt,ms){
+  opt=Object.assign({},opt||{});
+  if(typeof AbortController==='undefined')return fetch(u,opt);
+  const ac=new AbortController();setTimeout(()=>ac.abort(),ms||15000);
+  opt.signal=ac.signal;
+  return fetch(u,opt);
+}
+function loadScript(src){return scripts[src]||(scripts[src]=new Promise((ok,ko)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=()=>ko(new Error('impossibile caricare la libreria (serve la connessione)'));document.head.appendChild(s);}));}
+
+
+/* messaggio alla redazione: aperto la prima volta che si usa una versione nuova */
+(function(){try{const k='sp_nota_letta';if(localStorage.getItem(k)!==APP_VERSION){$('nota').open=true;}
+$('nota').addEventListener('toggle',()=>{if(!$('nota').open){try{localStorage.setItem(k,APP_VERSION)}catch(e){}}});}catch(e){}})();
+/* ---------- TMDB: chiave personale (in questo browser) o della redazione (config.json) ---------- */
+function tmdbBadge(){const b=$('tmdbState');
+  if(state.tmdbKey){b.textContent='attiva (chiave personale)';b.className='badge on';}
+  else if(state.tmdbShared){b.textContent='attiva (configurata dalla redazione)';b.className='badge on';}
+  else{b.textContent='non attiva';b.className='badge';}}
+(function initTmdb(){
+  try{state.tmdbKey=localStorage.getItem('sp_tmdb_key')||'';}catch(e){}
+  if(state.tmdbKey)$('tmdbKey').value=state.tmdbKey;
+  tmdbBadge();
+  if(location.protocol.startsWith('http'))
+    fetchT('config.json',{cache:'no-store'},6000).then(r=>r.ok?r.json():null).then(j=>{
+      if(j&&typeof j.tmdbKey==='string'&&j.tmdbKey.trim()){state.tmdbShared=j.tmdbKey.trim();tmdbBadge();}}).catch(()=>{});
+})();
+$('btnTmdb').onclick=async()=>{
+  const k=$('tmdbKey').value.trim();
+  if(!k){try{localStorage.removeItem('sp_tmdb_key')}catch(e){}state.tmdbKey='';tmdbBadge();
+    msg('mTmdb','ok',state.tmdbShared?'Chiave personale rimossa: uso quella della redazione.':'Chiave rimossa: TMDB non è attivo.');return;}
+  const prev=state.tmdbKey;state.tmdbKey=k;msg('mTmdb','ok','Verifico…');
+  try{
+    await tmdb('/configuration');
+    try{localStorage.setItem('sp_tmdb_key',k)}catch(e){}
+    tmdbBadge();msg('mTmdb','ok','Chiave valida e salvata in questo browser: da ora i film vengono cercati anche su TMDB.');
+  }catch(e){
+    state.tmdbKey=prev;tmdbBadge();
+    msg('mTmdb','err',e.status===401?'Chiave non valida (TMDB risponde 401): copia la «Chiave API» dalla pagina Impostazioni → API del tuo account TMDB.'
+      :'TMDB non raggiungibile da questa pagina ('+e.message+'). Se hai incollato il token lungo, prova con la «Chiave API» corta.');
+  }
+};
+/* ---------- API WordPress ---------- */
+function api(path,opt={}){
+  const site=$('site').value.replace(/\/+$/,'');
+  opt.headers=Object.assign({},opt.headers||{},{Authorization:'Basic '+state.auth});
+  const get=!opt.method||opt.method==='GET';
+  return (get?fetchT(site+'/wp-json'+path,opt,20000):fetch(site+'/wp-json'+path,opt)).then(async r=>{
+    if(!r.ok){let j={};try{j=await r.json()}catch(e){}
+      const err=new Error('HTTP '+r.status+(j.message?' – '+j.message:''));err.code=j.code;err.data=j.data;throw err;}
+    return r.json();
+  });
+}
+
+/* ---------- 1 login ---------- */
+$('btnLogin').onclick=async()=>{
+  const site=$('site').value.replace(/\/+$/,'');
+  msg('mLogin','ok','Verifico…');
+  /* 1. il sito è raggiungibile da questa pagina? (prova senza credenziali) */
+  let root=null;
+  try{
+    const r=await fetchT(site+'/wp-json/',{},15000);
+    root=r.ok?await r.json():{};
+  }catch(e){
+    state.auth=null;
+    if(e&&e.name==='AbortError'){msg('mLogin','err','Il sito non risponde (tempo scaduto): controlla l’indirizzo e la connessione, poi riprova.');return;}
+    msg('mLogin','err','Da questa pagina il sito non è raggiungibile: è un blocco del browser (CORS), non un problema di credenziali. Succede soprattutto aprendo il file direttamente dal disco. Rimedi: servire questo file da un indirizzo http(s) — per esempio dallo spazio web del sito — oppure chiedere all’amministratore di consentire le richieste all’API da altre origini.');
+    return;
+  }
+  const appPw=root&&root.authentication&&root.authentication['application-passwords'];
+  /* 2. le credenziali */
+  try{
+    state.auth=btoa(unescape(encodeURIComponent($('user').value.trim()+':'+$('pass').value.trim())));
+    state.me=await api('/wp/v2/users/me?context=edit');
+    let taxNote='';
+    try{
+      const tx=await api('/wp/v2/taxonomies');
+      for(const k in tx){const s=(tx[k].slug||k).toLowerCase();
+        if(s.includes('director'))state.tax.director=tx[k].rest_base;
+        if(s.includes('starring'))state.tax.starring=tx[k].rest_base;}
+      if(!state.tax.director||!state.tax.starring)taxNote=' (Regista/Attori andranno indicati a mano in WordPress)';
+    }catch(e){taxNote=' (Regista/Attori andranno indicati a mano in WordPress)';}
+    msg('mLogin','ok','Collegato come '+state.me.name+': sito raggiungibile e credenziali valide.'+taxNote);done(1);
+  }catch(e){
+    state.auth=null;
+    let m='Il sito risponde, ma l’accesso è stato rifiutato ('+e.message+'). ';
+    if(!appPw){
+      m+='Su questo sito le Application Password risultano DISATTIVATE (di solito da un plugin di sicurezza o dall’hosting): senza, questa pagina non può accedere. Va chiesto all’amministratore di abilitarle.';
+    }else{
+      m+='Attenzione: la password con cui entri in wp-admin qui NON funziona. Serve una Application Password: apri '+site+'/wp-admin/profile.php, scorri fino ad «Application Passwords», dai un nome (es. «app recensioni»), premi «Aggiungi» e incolla qui il codice generato, spazi compresi. Se hai già fatto così e l’errore resta, probabilmente il server scarta l’intestazione di autenticazione: l’amministratore può risolvere aggiungendo al file .htaccess la riga RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]';
+    }
+    msg('mLogin','err',m);
+  }
+};
+
+/* ---------- 2 importazione ---------- */
+/* HTML importato: converte le classi corsivo/grassetto (Google Docs) in stili inline
+   e rimuove style/script perché non sporchino la pagina */
+function setPaste(html){
+  const doc=new DOMParser().parseFromString(html,'text/html');
+  let css='';doc.querySelectorAll('style').forEach(s=>css+=s.textContent);
+  const grab=re=>{const out=new Set();let m;while((m=re.exec(css)))out.add(m[1]);return out;};
+  const ital=grab(/\.([\w-]+)[^{]*\{[^}]*font-style\s*:\s*italic/g);
+  const bold=grab(/\.([\w-]+)[^{]*\{[^}]*font-weight\s*:\s*(?:700|800|900|bold)/g);
+  doc.querySelectorAll('[class]').forEach(el=>{
+    el.classList.forEach(c=>{
+      if(ital.has(c))el.style.fontStyle='italic';
+      if(bold.has(c))el.style.fontWeight='700';
+    });
+  });
+  doc.querySelectorAll('style,script,link,meta,title').forEach(e=>e.remove());
+  $('paste').innerHTML=doc.body?doc.body.innerHTML:html;
+}
+$('btnGdoc').onclick=async()=>{
+  const m=($('gdoc').value||'').match(/\/document\/d\/([\w-]+)/);
+  if(!m){msg('mParse','err','Link del Google Doc non riconosciuto.');return;}
+  try{
+    const r=await fetch('https://docs.google.com/document/d/'+m[1]+'/export?format=html');
+    if(!r.ok)throw 0;
+    setPaste(await r.text());
+    msg('mParse','ok','Documento importato: premi «Leggi il testo e compila tutto».');
+  }catch(e){msg('mParse','warn','Importazione automatica non riuscita (permessi o rete): scarica il Doc come Word/PDF e caricalo qui sotto, oppure copia e incolla il testo.');}
+};
+
+$('docfile').onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;
+  const ext=(f.name.split('.').pop()||'').toLowerCase();
+  try{
+    if(ext==='docx'){
+      await loadScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js');
+      const res=await window.mammoth.convertToHtml({arrayBuffer:await f.arrayBuffer()});
+      $('paste').innerHTML=res.value;
+      msg('mParse','ok','Word importato (se il documento aveva versi centrati o epigrafi a destra, sistemali al passo 4). Premi «Leggi il testo e compila tutto».');
+    }else if(ext==='pdf'){
+      await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      const doc=await window.pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise;
+      const paras=[];let cur=null;
+      for(let p=1;p<=doc.numPages;p++){
+        const tc=await (await doc.getPage(p)).getTextContent();
+        const lines=[];let lastY=null,gaps=[];
+        tc.items.forEach(it=>{
+          const y=Math.round(it.transform[5]);
+          let ln=lines[lines.length-1];
+          if(!ln||Math.abs(ln.y-y)>3){if(ln&&lastY!==null)gaps.push(Math.abs(lastY-y));lines.push(ln={y,items:[]});lastY=y;}
+          const st=(tc.styles[it.fontName]||{});
+          const italic=/italic|oblique/i.test((st.fontFamily||'')+' '+it.fontName);
+          ln.items.push({t:it.str,i:italic});
+        });
+        gaps=gaps.filter(g=>g>2).sort((a,b)=>a-b);
+        const base=gaps.length?gaps[Math.floor(gaps.length/2)]:14;
+        let prevY=null;
+        lines.forEach(ln=>{
+          const brk=prevY===null||Math.abs(prevY-ln.y)>base*1.6;
+          if(brk||!cur){cur={runs:[]};paras.push(cur);}
+          ln.items.forEach(r=>{if(r.t)cur.runs.push(r)});
+          cur.runs.push({t:' ',i:false});
+          prevY=ln.y;
+        });
+        cur=null;
+      }
+      $('paste').innerHTML=paras.map(p=>{
+        let h='<p>',it=false;
+        p.runs.forEach(r=>{if(r.i!==it){h+=r.i?'<i>':'</i>';it=r.i;}h+=esc(r.t);});
+        if(it)h+='</i>';return h+'</p>';
+      }).join('');
+      msg('mParse','warn','PDF importato: i corsivi e la divisione dei paragrafi sono ricostruiti, ricontrollali nell’anteprima. Poi premi «Leggi il testo e compila tutto».');
+    }else if(ext==='txt'){
+      const t=await f.text();
+      $('paste').innerHTML=t.split(/\n\s*\n/).map(p=>'<p>'+esc(p.trim()).replace(/\n/g,'<br>')+'</p>').join('');
+      msg('mParse','ok','Testo importato (i corsivi non esistono nel .txt: aggiungili nell’anteprima se servono).');
+    }else if(ext==='html'||ext==='htm'){
+      setPaste(await f.text());
+      msg('mParse','ok','HTML importato: premi «Leggi il testo e compila tutto».');
+    }else{
+      msg('mParse','err','Il vecchio formato .doc non è leggibile qui: salva il file come .docx oppure copia e incolla il testo.');
+    }
+  }catch(err){msg('mParse','err','Importazione non riuscita: '+err.message);}
+};
+
+/* ---------- parsing paragrafi ---------- */
+function runsOf(node,it,bo){
+  let out=[];
+  node.childNodes.forEach(n=>{
+    if(n.nodeType===3){out.push({t:n.textContent,i:it,b:bo});return;}
+    if(n.nodeType!==1)return;
+    const st=n.style||{};const tag=n.tagName;
+    const i2=it||tag==='I'||tag==='EM'||/italic/.test(st.fontStyle||'');
+    const b2=bo||tag==='B'||tag==='STRONG'||parseInt(st.fontWeight)>=600;
+    if(tag==='BR'){out.push({t:'\n',i:i2,b:b2});return;}
+    out=out.concat(runsOf(n,i2,b2));
+  });
+  return out;
+}
+function parseParas(){
+  const root=$('paste');
+  const blocks=root.querySelectorAll('p,li,h1,h2,h3,div');
+  const list=[];const seen=new Set();
+  blocks.forEach(b=>{
+    if([...b.querySelectorAll('p,li,div')].length)return;
+    if(seen.has(b))return;seen.add(b);
+    const runs=runsOf(b,false,false).filter(r=>r.t.length);
+    const text=runs.map(r=>r.t).join('');
+    if(!text.trim())return;
+    let al=(b.style.textAlign||'').toLowerCase();
+    if(!['center','right','justify','left'].includes(al))al='justify';
+    list.push({runs,text:text.trim(),align:al});
+  });
+  if(!list.length){ /* testo incollato senza formattazione: solo nodi di testo */
+    (root.innerText||root.textContent||'').split(/\n\s*\n|\n/).map(s=>s.trim()).filter(Boolean)
+      .forEach(t=>list.push({runs:[{t,i:false,b:false}],text:t,align:'justify'}));
+  }
+  return list;
+}
+/* ---------- rilevamento di titolo e regista dal testo ---------- */
+function escRe(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+function detectFilm(){
+  const freq={},bonus={},regOf={};
+  const add=(s,w)=>{
+    s=s.trim().replace(/^[«"'‘“(]+|[»"'’”),.;:!?]+$/g,'').trim();
+    if(s.length<2||s.length>60||/^\d+$/.test(s))return null;
+    freq[s]=(freq[s]||0)+(w||1);return s;
+  };
+  state.paras.forEach(p=>{
+    let cur='';
+    p.runs.forEach(r=>{if(r.i)cur+=r.t;else{if(cur.trim())add(cur,2);cur='';}});
+    if(cur.trim())add(cur,2);
+    (p.text.match(/«([^»]{2,60})»/g)||[]).forEach(q=>add(q,1)); /* anche tra caporali, con peso minore */
+  });
+  const txt=state.paras.map(p=>p.text).join(' ');
+  const NAME="([A-Z\u00C0-\u00DE][\\w'\u2019\u00E0-\u00FF-]+(?:\\s+[A-Z\u00C0-\u00DE][\\w'\u2019\u00E0-\u00FF-]+){1,2})";
+  /* formule tipiche delle recensioni: trovano il titolo anche in un testo senza corsivi,
+     e a volte anche il regista */
+  const T="([A-Z\u00C0-\u00DE][^.;:!?\u00AB\u00BB]{1,45}?)";
+  let mm;
+  const re1=new RegExp(T+",?\\s+(?:l['\u2019]esordio|l['\u2019]opera prima|il nuovo film|il film|il debutto|la nuova pellicola)\\s+di\\s+"+NAME,"g");
+  while((mm=re1.exec(txt))){const c=add(mm[1],3);if(c){bonus[c]=(bonus[c]||0)+8;if(!regOf[c])regOf[c]=mm[2];}}
+  const re2=new RegExp("(?:^|[.!?]\\s+)"+T+"\\s+\u00E8\\s+un[a'\u2019]?\\s*(?:film|pellicola|opera|documentario|commedia|thriller|noir|western|horror|esordio)","g");
+  while((mm=re2.exec(txt))){const c=add(mm[1],3);if(c)bonus[c]=(bonus[c]||0)+8;}
+  let cands=Object.entries(freq).sort((a,b)=>b[1]-a[1]||b[0].length-a[0].length).map(x=>x[0]).slice(0,8);
+  /* privilegia il corsivo che apre il pezzo e quello nominato accanto a parole di cinema:
+     distingue il film dalle opere solo citate (libri, altri film) */
+  const first2=state.paras.slice(0,2).filter(p=>p.align==='justify').map(p=>p.text).join(' ');
+  const KW=/film|pellicola|regia|regist|cinema|schermo|lungometraggio|inquadratur|montaggio|girare|ripresa|opera prima/i;
+  const LIBRO=/scritt|libro|romanz|racconto|saggio|poesia|pagine|capitolo/i;
+  const CITAZ=/[A-ZÀ-Þ][\wà-ÿ]+\s+[A-ZÀ-Þ][\wà-ÿ]+,\s*$/;
+  const scoreOf=c=>{
+    let s=freq[c]+(bonus[c]||0);
+    if(c.split(/\s+/).length>7)s-=5;                       /* più frase che titolo */
+    if(/(^|\s)(è|c'è|c’è|sono|era|sarà|perché|abbiamo|quella|questo)(\s|$)/i.test(c))s-=4;
+    if(first2.includes(c))s+=3;
+    let idx=-1,pen=0,bon=0;
+    while((idx=txt.indexOf(c,idx+1))>-1){
+      const pre=txt.slice(Math.max(0,idx-38),idx);
+      if(LIBRO.test(pre)||CITAZ.test(pre))pen+=4;
+      if(KW.test(pre))bon+=3;
+    }
+    const sent=txt.match(new RegExp('[^.!?]*'+escRe(c)+'[^.!?]*'));
+    if(sent&&KW.test(sent[0]))bon+=3;
+    return s+Math.min(6,bon)-Math.min(8,pen);
+  };
+  cands=cands.map(c=>[c,scoreOf(c)]).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
+  /* 1) il candidato con regista già trovato dalle formule, o seguito da «di Nome Cognome» */
+  for(const c of cands){
+    if(regOf[c])return {film:c,reg:regOf[c]};
+    const m=txt.match(new RegExp(escRe(c)+"[»\"']?\\s*,?\\s+di\\s+"+NAME));
+    if(m)return {film:c,reg:m[1]};
+  }
+  /* 2) regista da formule esplicite, titolo dal corsivo più frequente */
+  let reg=null;
+  const rm=txt.match(new RegExp("(?:diretto da|[Rr]egia di|firmato da|il film di|l'esordio di)\\s+"+NAME));
+  if(rm)reg=rm[1];
+  if(cands[0])return {film:cands[0],reg};
+  return null;
+}
+$('btnParse').onclick=async()=>{
+  let list=parseParas();
+  if(!list.length){msg('mParse','err','Nessun testo trovato: importa o incolla la recensione qui sopra.');return;}
+  let note='';
+  const t=list[0].text;
+  const m=t.length<90&&t.match(/^(.+?),?\s+di\s+(.+?)\.?$/);
+  if(m){$('film').value=m[1].trim();$('regista').value=m[2].trim();list.shift();note='Titolo e regista letti dalla prima riga. ';}
+  if(state.me&&list.length&&list[list.length-1].text.toLowerCase()===state.me.name.toLowerCase()){
+    list.pop();note+='Firma finale rimossa (l’autore appare già come firma dell’articolo). ';}
+  state.paras=list;state.split=defaultSplit(list);state.img2off=false;
+  if(!$('film').value.trim()){
+    const det=detectFilm();
+    if(det){
+      $('film').value=det.film;
+      if(det.reg&&!$('regista').value)$('regista').value=det.reg;
+      note+='Titolo e regista rilevati dal testo («'+det.film+'»'+(det.reg?' di '+det.reg:'')+'): controlla che siano giusti. ';
+    }
+  }
+  syncMeta();renderParas();
+  if(!$('film').value.trim()){
+    msg('mParse','warn',note+list.length+' paragrafi letti, ma non sono riuscito a capire il titolo del film (né dalla prima riga né dai corsivi del testo): scrivi titolo e regista al passo 3 e premi «Compila automaticamente».');
+    return;
+  }
+  msg('mParse','ok',note+list.length+' paragrafi. Cerco in rete dati del film e immagini…');
+  const res=await autofill();
+  let m2=note+list.length+' paragrafi. ';
+  if(res.info.length)m2+='Compilato: '+res.info.join('; ')+'. ';
+  if(res.fails.length)msg('mParse','warn',m2+'Attenzione: '+res.fails.join('; ')+'.');
+  else msg('mParse','ok',m2+'Controlla i passi 3–6 e premi «Crea bozza».');
+};
+
+/* ---------- ricerca in rete (IMDb, Wikidata, Wikipedia) ---------- */
+function jsonp(url,cb){return new Promise((ok,ko)=>{
+  let done=false;const s=document.createElement('script');
+  window[cb]=d=>{done=true;try{delete window[cb]}catch(e){}s.remove();ok(d);};
+  s.src=url;s.onerror=()=>{if(!done){s.remove();ko(new Error('load'));}};
+  document.head.appendChild(s);
+  setTimeout(()=>{if(!done){s.remove();ko(new Error('timeout'));}},8000);
+});}
+async function imdbSuggest(q){
+  const first=/^[a-z0-9]/.test(q)?q[0]:'x';
+  try{
+    const r=await fetchT('https://v2.sg.media-imdb.com/suggestion/'+first+'/'+encodeURIComponent(q)+'.json',{},10000);
+    if(r.ok)return ((await r.json()).d||[]);
+  }catch(e){}
+  try{
+    const d=await jsonp('https://sg.media-imdb.com/suggests/'+first+'/'+encodeURIComponent(q)+'.json','imdb$'+q.replace(/[^a-z0-9]/g,'_'));
+    return d.d||[];
+  }catch(e){}
+  return null;
+}
+function mins(v){v=Math.round(Math.abs(v));if(v>400)v=Math.round(v/60);return v;} /* alcune fonti registrano i secondi */
+async function itunesFilm(q){
+  try{const r=await fetchT('https://itunes.apple.com/search?media=movie&limit=5&term='+encodeURIComponent(q),{},10000);
+    if(r.ok)return (await r.json()).results||[];}catch(e){}
+  try{const d=await jsonp('https://itunes.apple.com/search?media=movie&limit=5&callback=_itcb&term='+encodeURIComponent(q),'_itcb');
+    return d.results||[];}catch(e){}
+  return null;
+}
+const WD='https://www.wikidata.org/w/api.php';
+async function wdJson(params){return (await fetchT(WD+'?format=json&origin=*&'+params,{},12000)).json();}
+async function wikidataFilm(film,reg,hintYear){
+  const s=await wdJson('action=wbsearchentities&language=it&uselang=it&limit=10&type=item&search='+encodeURIComponent(film));
+  const hits=(s.search||[]).filter(x=>/film|movie|cortometraggio|documentario|lungometraggio/i.test(x.description||'')).slice(0,6);
+  if(!hits.length)return null;
+  const e=await wdJson('action=wbgetentities&props=claims|sitelinks&ids='+hits.map(x=>x.id).join('|'));
+  const qOf=(c,p)=>(c[p]||[]).map(x=>x.mainsnak&&x.mainsnak.datavalue&&x.mainsnak.datavalue.value&&x.mainsnak.datavalue.value.id).filter(Boolean);
+  const yearOf=c=>{const v=c.P577&&c.P577[0]&&c.P577[0].mainsnak&&c.P577[0].mainsnak.datavalue&&c.P577[0].mainsnak.datavalue.value;return v&&v.time?parseInt(v.time.slice(1,5)):null;};
+  const ents=hits.map(x=>({x,ent:e.entities&&e.entities[x.id]})).filter(o=>o.ent);
+  const dirIds=[...new Set(ents.flatMap(o=>qOf(o.ent.claims||{},'P57').slice(0,2)))].slice(0,40);
+  const lab={};
+  if(dirIds.length){const le=await wdJson('action=wbgetentities&props=labels&languages=it|en&ids='+dirIds.join('|'));
+    dirIds.forEach(id=>{const L=le.entities&&le.entities[id]&&le.entities[id].labels;lab[id]=L?((L.it&&L.it.value)||(L.en&&L.en.value)||''):'';});}
+  const surname=n=>normName(n).split(' ').pop();
+  let best=null,bs=-99,bestDm=false;
+  for(const o of ents){
+    const c=o.ent.claims||{};let sc=0;
+    if(normName(o.x.label)===normName(film))sc+=3;
+    const dl=qOf(c,'P57').map(id=>lab[id]||'').filter(Boolean);
+    const dm=!!reg&&dl.some(n=>sameName(n,reg)||surname(n)===surname(reg));
+    if(reg)sc+=dm?10:(dl.length?-6:0);
+    const y=yearOf(c);
+    if(hintYear&&y)sc+=Math.abs(y-hintYear)<=1?4:-4;
+    if(sc>bs){bs=sc;best=o;bestDm=dm;}
+  }
+  const h0=best.x,ent=best.ent,c=ent.claims||{};
+  const val=p=>c[p]&&c[p][0]&&c[p][0].mainsnak&&c[p][0].mainsnak.datavalue&&c[p][0].mainsnak.datavalue.value;
+  const out={label:h0.label,desc:h0.description||'',dirMatch:bestDm,score:bs};
+  out.imdb=typeof val('P345')==='string'?val('P345'):null;
+  out.anno=yearOf(c);
+  const du=val('P2047');out.durata=du&&du.amount?mins(parseFloat(du.amount)):null;
+  out.ytIt=null;out.ytOrig=null;
+  (c.P1651||[]).forEach(st=>{
+    const id=st.mainsnak&&st.mainsnak.datavalue&&st.mainsnak.datavalue.value;if(typeof id!=='string')return;
+    const langs=((st.qualifiers&&st.qualifiers.P407)||[]).map(q=>q.datavalue&&q.datavalue.value&&q.datavalue.value.id);
+    if(langs.includes('Q652')){if(!out.ytIt)out.ytIt=id;}
+    else if(!out.ytOrig)out.ytOrig=id;
+  });
+  const castQ=qOf(c,'P161').slice(0,4),regQ=qOf(c,'P57').slice(0,1),paeseQ=qOf(c,'P495').slice(0,2);
+  const img=val('P3383')||val('P18');out.commons=typeof img==='string'?img:null;
+  out.wiki=(ent.sitelinks&&((ent.sitelinks.itwiki&&{l:'it',t:ent.sitelinks.itwiki.title})||(ent.sitelinks.enwiki&&{l:'en',t:ent.sitelinks.enwiki.title})))||null;
+  const need=[...castQ,...regQ,...paeseQ];
+  if(need.length){
+    const le=await wdJson('action=wbgetentities&props=labels&languages=it|en&ids='+need.join('|'));
+    const l2=id=>{const L=le.entities&&le.entities[id]&&le.entities[id].labels;return L&&((L.it&&L.it.value)||(L.en&&L.en.value));};
+    out.cast=castQ.map(l2).filter(Boolean);
+    out.regista=regQ.length?l2(regQ[0]):null;
+    out.paese=paeseQ.map(l2).filter(Boolean).map(s=>s.charAt(0).toUpperCase()+s.slice(1)).join(', ')||null;
+  }
+  return out;
+}
+
+/* ---------- TMDB (facoltativo: serve una chiave API gratuita) ---------- */
+const TMDB='https://api.themoviedb.org/3',TIMG='https://image.tmdb.org/t/p/';
+function tmdbKey(){return (state.tmdbKey||state.tmdbShared||'').trim();}
+async function tmdb(path,params){
+  const k=tmdbKey();if(!k)throw new Error('TMDB non configurato');
+  const u=new URL(TMDB+path);
+  for(const [a,b] of Object.entries(params||{}))if(b!=null&&b!=='')u.searchParams.set(a,b);
+  const opt={};
+  if(/^eyJ/.test(k))opt.headers={Authorization:'Bearer '+k};else u.searchParams.set('api_key',k);
+  const r=await fetchT(u.toString(),opt,12000);
+  if(!r.ok){const e=new Error('TMDB HTTP '+r.status);e.status=r.status;throw e;}
+  return r.json();
+}
+let regionIT=null;try{regionIT=new Intl.DisplayNames(['it'],{type:'region'});}catch(e){}
+function countryIT(c){try{return (regionIT&&regionIT.of(c.iso_3166_1))||c.name;}catch(e){return c.name;}}
+function yearOf(s){return s&&/^\d{4}/.test(s)?parseInt(s):null;}
+/* 2 = titolo identico (in una delle lingue), 1 = inizio uguale, 0 = diverso */
+function titleMatch(titles,film){
+  const f=normName(film);let m=0;
+  for(const t of titles){const n=normName(t);if(!n)continue;
+    if(n===f)return 2;
+    if(n.startsWith(f+' ')||f.startsWith(n+' '))m=1;}
+  return m;
+}
+/* true = il regista coincide, false = è un altro, null = non si sa */
+function dirMatches(names,reg){
+  if(!reg||!names||!names.length)return null;
+  const sur=s=>normName(s).split(' ').pop();
+  return names.some(n=>sameName(n,reg)||sur(n)===sur(reg));
+}
+/* Candidati da TMDB: ricerca per titolo (italiano e inglese) + filmografia del regista,
+   poi verifica del regista sui più probabili e punteggio con anno e contesto. */
+async function tmdbFind(film,reg,hints,hintYear){
+  const map=new Map();
+  const put=(m,lang)=>{
+    if(!m||!m.id)return null;
+    let c=map.get(m.id);
+    if(!c){c={tid:m.id,titles:new Set(),ot:m.original_title||'',y:yearOf(m.release_date),pop:m.popularity||0};map.set(m.id,c);}
+    if(m.title)c.titles.add(m.title);if(m.original_title)c.titles.add(m.original_title);
+    if(lang==='it'&&m.title&&!c.itTitle)c.itTitle=m.title;
+    if(!c.y)c.y=yearOf(m.release_date);
+    return c;
+  };
+  const jobs=[tmdb('/search/movie',{query:film,language:'it-IT',include_adult:'false'}),
+              tmdb('/search/movie',{query:film,language:'en-US',include_adult:'false'})];
+  if(reg)jobs.push(tmdb('/search/person',{query:reg,include_adult:'false'}));
+  const res=await Promise.allSettled(jobs);
+  if(res[0].status==='rejected'&&res[1].status==='rejected')throw res[0].reason;
+  res.slice(0,2).forEach((r,i)=>{if(r.status==='fulfilled')(r.value.results||[]).slice(0,12).forEach(m=>put(m,i?'en':'it'));});
+  if(reg&&res[2]&&res[2].status==='fulfilled'){
+    const sur=normName(reg).split(' ').pop();
+    const ppl=(res[2].value.results||[]).filter(p=>sameName(p.name||'',reg)||(p.known_for_department==='Directing'&&normName(p.name).split(' ').pop()===sur)).slice(0,2);
+    for(const p of ppl){
+      const cr=await Promise.allSettled([tmdb('/person/'+p.id+'/movie_credits',{language:'it-IT'}),tmdb('/person/'+p.id+'/movie_credits',{language:'en-US'})]);
+      cr.forEach((r,i)=>{if(r.status!=='fulfilled')return;
+        (r.value.crew||[]).filter(x=>x.job==='Director').forEach(m=>{
+          if(!map.has(m.id)&&!titleMatch([m.title,m.original_title],film))return;
+          const c=put(m,i?'en':'it');c.dirs=c.dirs||[];if(!c.dirs.includes(p.name))c.dirs.push(p.name);c.byDirector=true;
+        });});
+    }
+  }
+  let cands=[...map.values()];
+  const pre=c=>titleMatch([...c.titles],film)*4+(c.byDirector?10:0)+(hintYear&&c.y?(Math.abs(c.y-hintYear)<=1?4:-2):0)+Math.min(2,Math.log10(c.pop+1));
+  cands.sort((a,b)=>pre(b)-pre(a));cands=cands.slice(0,8);
+  if(reg)await Promise.all(cands.slice(0,5).filter(c=>!c.dirs).map(c=>
+    tmdb('/movie/'+c.tid+'/credits').then(cr=>{c.dirs=(cr.crew||[]).filter(x=>x.job==='Director').map(x=>x.name);}).catch(()=>{})));
+  for(const c of cands){
+    const tm=titleMatch([...c.titles],film);c.tExact=tm===2;
+    let sc=tm===2?5:tm===1?1:0;
+    const dm=dirMatches(c.dirs,reg);c.dirMatch=dm===true;
+    if(dm===true)sc+=12;else if(dm===false)sc-=6;
+    const y=c.y||0;
+    if(hintYear&&y){const dd=Math.abs(y-hintYear);sc+=dd===0?7:dd===1?4:-6;}
+    else if(y){
+      if(hints.classic)sc+=(CUR_YEAR-y>10?1:0);
+      else if(hints.festival)sc+=(CUR_YEAR-y<=2?4:CUR_YEAR-y<=4?1:-4);
+      else sc+=(CUR_YEAR-y<=2?2:CUR_YEAR-y<=6?0:-1);
+    }
+    if(y&&hints.yrs.includes(y))sc+=2;
+    sc+=Math.min(1.5,Math.log10(c.pop+1)/2);
+    c.score=sc;
+    c.l=[...c.titles].find(t=>normName(t)===normName(film))||c.itTitle||[...c.titles][0]||film;
+  }
+  cands.sort((a,b)=>b.score-a.score);
+  const top=cands[0]||null,second=cands[1]||null;
+  const dirBad=c=>!!reg&&!!c.dirs&&c.dirs.length>0&&!c.dirMatch;
+  const confident=!!top&&(
+    (top.dirMatch&&top.tExact)||
+    (top.tExact&&hintYear&&top.y&&Math.abs(top.y-hintYear)<=1&&!dirBad(top))||
+    (!reg&&top.tExact&&(!second||top.score-second.score>=4)));
+  return {cands,top,confident};
+}
+/* scheda completa del film: dati, trailer (italiano e originale), fotogrammi e locandina */
+async function tmdbDetails(tid){
+  const m=await tmdb('/movie/'+tid,{language:'it-IT',append_to_response:'credits,external_ids'});
+  const ol=m.original_language||'en';
+  const langs=[...new Set(['it',ol,'en'])].join(',');
+  const [vi,im]=await Promise.allSettled([
+    tmdb('/movie/'+tid+'/videos',{include_video_language:langs}),
+    tmdb('/movie/'+tid+'/images',{include_image_language:'null,'+langs})]);
+  const cr=m.credits||{};
+  const out={tid,title:m.title||m.original_title||'',ot:m.original_title||'',ol,
+    anno:yearOf(m.release_date),durata:m.runtime||null,
+    paese:(m.production_countries||[]).slice(0,2).map(countryIT).join(', ')||null,
+    cast:(cr.cast||[]).slice().sort((a,b)=>(a.order||0)-(b.order||0)).slice(0,4).map(x=>x.name),
+    regista:(cr.crew||[]).filter(x=>x.job==='Director').map(x=>x.name).join(', ')||null,
+    imdb:(m.external_ids&&m.external_ids.imdb_id)||m.imdb_id||null,
+    ytIt:null,ytOrig:null,imgs:[]};
+  if(vi.status==='fulfilled'){
+    const vs=(vi.value.results||[]).filter(v=>v.site==='YouTube'&&v.key&&/trailer|teaser/i.test(v.type||''));
+    const sc=v=>(v.type==='Trailer'?3:0)+(v.official?2:0)+((v.size||0)>=1080?1:0)+(/ufficiale|official/i.test(v.name||'')?1:0)-(/teaser|clip|spot|featurette|reaction/i.test(v.name||'')?1:0);
+    const best=l=>vs.filter(v=>v.iso_639_1===l).sort((a,b)=>sc(b)-sc(a))[0]||null;
+    const it=best('it');
+    const og=ol!=='it'?(best(ol)||best('en')):best('en');
+    out.ytIt=it?it.key:null;
+    out.ytOrig=og&&(!it||og.key!==it.key)?og.key:null;
+  }
+  if(im.status==='fulfilled'){
+    const txt=b=>b.iso_639_1&&b.iso_639_1!=='xx'?1:0;  /* prima le immagini senza scritte */
+    const all=(im.value.backdrops||[]).slice().sort((a,b)=>txt(a)-txt(b)||(b.vote_count||0)-(a.vote_count||0)||(b.vote_average||0)-(a.vote_average||0)||(b.width||0)-(a.width||0));
+    let bd=all.filter(b=>(b.width||0)>=1280);if(!bd.length)bd=all;
+    bd.slice(0,3).forEach(b=>out.imgs.push({u:TIMG+'original'+b.file_path,l:'Fotogramma (TMDB)'}));
+    const ps=im.value.posters||[];
+    const pp=ps.find(p=>p.iso_639_1==='it')||ps.find(p=>p.iso_639_1===ol)||ps[0];
+    if(pp)out.imgs.push({u:TIMG+'w1280'+pp.file_path,l:'Locandina (TMDB)'});
+  }
+  if(!out.imgs.length&&m.backdrop_path)out.imgs.push({u:TIMG+'original'+m.backdrop_path,l:'Fotogramma (TMDB)'});
+  if(!out.imgs.some(x=>x.l.startsWith('Locandina'))&&m.poster_path)out.imgs.push({u:TIMG+'w1280'+m.poster_path,l:'Locandina (TMDB)'});
+  return out;
+}
+function applyTmdb(t){
+  const S=(id,v)=>{if(v)setAuto(id,v);};
+  if(t.imdb)S('imdb','https://www.imdb.com/title/'+t.imdb+'/');
+  S('anno',t.anno?String(t.anno):'');S('durata',t.durata?t.durata+"'":'');S('paese',t.paese);
+  S('cast',(t.cast||[]).join(', '));
+  if(!$('regista').value.trim()&&t.regista)$('regista').value=t.regista;
+  if(t.ytIt)S('trailerIt','https://www.youtube.com/watch?v='+t.ytIt);
+  if(t.ytOrig)S('trailerOrig','https://www.youtube.com/watch?v='+t.ytOrig);
+}
+
+/* ---------- confronto di nomi e titoli ---------- */
+function decodeEnt(s){const t=document.createElement('textarea');t.innerHTML=s||'';return t.value;}
+function normName(s){return (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()
+  .replace(/[\u2019\u2018`\u00b4]/g,"'").replace(/[-\u2013\u2014_.]/g,' ').replace(/[^a-z0-9' ]/g,' ').replace(/\s+/g,' ').trim();}
+function sameName(a,b){const A=normName(a),B=normName(b);if(!A||!B)return false;if(A===B)return true;
+  if(A.split(' ').sort().join(' ')===B.split(' ').sort().join(' '))return true;
+  const ta=A.split(' ').filter(w=>w.length>1),tb=B.split(' ').filter(w=>w.length>1); /* ignora le iniziali puntate */
+  return ta.length>=2&&tb.length>=2&&ta.join(' ')===tb.join(' ');}
+
+/* ---------- campi compilati in automatico (sovrascrivibili) ---------- */
+function setAuto(id,v){const el=$(id);if(v==null||v==='')return;if(!el.value.trim()||el.dataset.auto){el.value=v;el.dataset.auto='1';}}
+function clearAuto(id){const el=$(id);if(el.dataset.auto){el.value='';delete el.dataset.auto;}}
+function fillEmpty(id,v){const el=$(id);if(v==null||v==='')return;if(!el.value.trim()){el.value=v;el.dataset.auto='1';}}
+const AUTO_FIELDS=['imdb','anno','cast','durata','paese','trailerIt','trailerOrig'];
+
+/* ---------- indizi dal testo per riconoscere il film giusto ---------- */
+const CUR_YEAR=new Date().getFullYear();
+function filmHints(){
+  const low=bodyText().toLowerCase();
+  return {
+    festival:/\b(tuc|tff|torino film festival|underground cinefest|festival|in concorso|fuori concorso|anteprima|mostra del cinema|venezia|cannes|berlinale|locarno|sundance|rotterdam|in sala dal|nelle sale|uscita)\b/.test(low),
+    classic:/(restaur|classico|\bcult\b|riedizion|retrospettiv|ritorna in sala|anni '?[2-9]0|anni (venti|trenta|quaranta|cinquanta|sessanta|settanta|ottanta|novanta))/.test(low),
+    yrs:(low.match(/\b(19[2-9]\d|20[0-4]\d)\b/g)||[]).map(Number)
+  };
+}
+function scoreCand(c,film,hints,hintYear,wdImdb){
+  let s=0;const t=normName(c.l),f=normName(film);
+  if(t===f)s+=5;else if(t.startsWith(f)||f.startsWith(t))s+=1;else s-=3;
+  if(c.qid&&!/^(movie|tvMovie|short|video|tvSpecial)$/.test(c.qid))s-=4;
+  const y=c.y||0;
+  if(hintYear&&y){const d=Math.abs(y-hintYear);s+=d===0?7:d===1?4:-6;}
+  else if(y){
+    if(hints.classic)s+=(CUR_YEAR-y>10?1:0);
+    else if(hints.festival)s+=(CUR_YEAR-y<=2?4:CUR_YEAR-y<=4?1:-4);
+    else s+=(CUR_YEAR-y<=2?2:CUR_YEAR-y<=6?0:-1);
+  }
+  if(y&&hints.yrs.includes(y))s+=2;
+  if(wdImdb&&c.id===wdImdb)s+=10;
+  return s;
+}
+function applyCand(c){
+  if(!c)return;
+  setAuto('imdb','https://www.imdb.com/title/'+c.id+'/');
+  if(c.y)setAuto('anno',String(c.y));
+  if(c.s)setAuto('cast',c.s);
+}
+function renderFilmPick(sel){
+  const box=$('filmPick'),s=$('filmSel');
+  const cs=state.filmCands||[];
+  if(!cs.length){box.style.display='none';return;}
+  s.innerHTML=cs.map(c=>'<option value="'+esc(c.key||c.id)+'">'+esc(((c.l||'')+(c.y?' ('+c.y+')':'')+(c.s?' \u00b7 '+c.s:'')).slice(0,110)+(c.src==='tmdb'?' \u00b7 TMDB':' \u00b7 IMDb'))+'</option>').join('')
+    +'<option value="">\u2014 nessuno di questi: compilo i dati a mano</option>';
+  s.value=sel||'';box.style.display='';
+}
+
+/* ---------- programma del festival (PDF) ---------- */
+async function pdfLines(buf){
+  await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+  window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const doc=await window.pdfjsLib.getDocument({data:buf}).promise;
+  const out=[];
+  for(let p=1;p<=doc.numPages;p++){
+    const tc=await (await doc.getPage(p)).getTextContent();
+    const rows=[];
+    tc.items.forEach(it=>{if(!it.str)return;const y=Math.round(it.transform[5]),x=it.transform[4];
+      let r=rows.find(r=>Math.abs(r.y-y)<=3);if(!r){r={y,items:[]};rows.push(r);}r.items.push({x,t:it.str});});
+    rows.sort((a,b)=>b.y-a.y).forEach(r=>{const t=r.items.sort((a,b)=>a.x-b.x).map(i=>i.t).join(' ').replace(/\s+/g,' ').trim();if(t)out.push(t);});
+  }
+  return out;
+}
+function parseProgramme(lines,film){
+  const f=normName(film);if(!f)return null;
+  let i=lines.findIndex(l=>normName(l)===f);
+  if(i<0)i=lines.findIndex(l=>normName(l).startsWith(f+' '));
+  if(i<0)return null;
+  const out={film,snippet:lines.slice(i,i+7).join(' \u00b7 ')};
+  const SCHED=/\b(luned|marted|mercoled|gioved|venerd|sabato|domenica)\w*|\bslot\b|\bore\s*\d|\d{1,2}[:.]\d{2}/i;
+  const NAME=/^[A-Z\u00C0-\u017F][\w\u00C0-\u017F'.\u2019-]*(\s+[A-Z\u00C0-\u017F][\w\u00C0-\u017F'.\u2019-]*){0,4}$/;
+  for(const raw of lines.slice(i+1,i+14)){
+    const l=raw.trim();if(!l)continue;
+    if(/^sinossi|^synopsis/i.test(l))break;
+    if(normName(l)===f)continue;
+    let used=false;
+    const ym=l.match(/(?:^|[\s,(])((?:19|20)\d{2})(?=$|[\s,)])/);
+    if(!out.anno&&ym&&l.split(/\s+/).length<=6){out.anno=ym[1];used=true;}
+    const dm=l.match(/(\d{2,3})\s*(?:'|\u2019|\u2032|min\b|minuti)/i);
+    if(!out.durata&&dm){out.durata=dm[1]+"'";used=true;}
+    if(used)continue;
+    if(!out.regista){
+      let r=l.replace(/^(regia|di|directed by|director|un film di)[:\s]+/i,'');
+      const cut=r.search(SCHED);if(cut>0)r=r.slice(0,cut);r=r.trim();
+      if(r&&NAME.test(r)){out.regista=r;continue;}
+    }
+    if(out.regista&&!out.paese&&!out.anno&&/^[A-Za-z\u00C0-\u017F][A-Za-z\u00C0-\u017F ,/'-]{2,40}$/.test(l)&&l.split(/\s+/).length<=5){out.paese=l;continue;}
+  }
+  return out;
+}
+function applyProgramme(){
+  if(!state.progLines)return false;
+  const film=$('film').value.trim();
+  if(!film){msg('mProg','warn','Programma caricato: lo user\u00f2 appena leggi la recensione (serve il titolo del film).');return false;}
+  const p=parseProgramme(state.progLines,film);
+  if(!p){state.prog=null;msg('mProg','warn','Nel programma non trovo \u00ab'+film+'\u00bb: controlla il titolo.');return false;}
+  state.prog=p;const notes=[];
+  if(p.regista){const r=$('regista');
+    if(!r.value.trim()||r.dataset.auto){r.value=p.regista;delete r.dataset.auto;}
+    else if(!sameName(r.value,p.regista))notes.push('il programma indica come regista \u00ab'+p.regista+'\u00bb, nel testo c\u2019\u00e8 \u00ab'+r.value+'\u00bb');}
+  ['paese','anno','durata'].forEach(k=>{if(p[k]){$(k).value=p[k];delete $(k).dataset.auto;}});
+  syncMeta();
+  msg('mProg',notes.length?'warn':'ok','Dal programma: '+[p.regista,p.paese,p.anno,p.durata].filter(Boolean).join(' \u00b7 ')+(notes.length?'. Attenzione: '+notes.join('; '):'')+'.');
+  return true;
+}
+
+/* fotogrammi diversi che YouTube genera per ogni video */
+function ytFrames(id){
+  return ['maxresdefault','maxres1','maxres2','maxres3','hq1','hq2','hq3','hqdefault']
+    .map(k=>({u:'https://i.ytimg.com/vi/'+id+'/'+k+'.jpg',l:'Fotogramma dal trailer'}));
+}
+const cardEl=n=>document.querySelectorAll('.card')[n-1];
+const done=(n,on)=>{const c=cardEl(n);if(c)c.classList[on===false?'remove':'add']('done');};
+/* riassunto in stile rivista: parole-tema + frase di giudizio (~200-240 caratteri) */
+function buildExcerpt(film,reg){
+  const jp=state.paras.filter(p=>p.align==='justify');
+  if(!jp.length)return '';
+  const sents=[];jp.forEach(p=>(p.text.match(/[^.!?]+[.!?]/g)||[]).forEach(s=>sents.push(s.trim())));
+  if(!sents.length)return '';
+  const STOP=new Set(('della delle degli dello del di da in con su per tra fra il lo la le gli un una uno che non come dove quando anche ancora quindi questo questa questi queste quello quella quelle cui nel nella nelle negli sulla sulle sugli alla alle agli essere sono stato stata stati viene vengono fanno fare film regista registi pellicola opera senza sempre tutto tutti tutte ogni suo sua suoi sue loro proprio propria dopo prima contro verso sotto sopra fino oltre appare appaiono resta restano infatti dunque mentre perché eppure invece narrazione personaggi personaggio protagonisti protagonista racconto storia scena scene spettatore spettatori immagine immagini titolo momento momenti parte parti punto tempo modo visione sguardo'+' '+film.toLowerCase()+' '+(reg||'').toLowerCase()).split(/\s+/));
+  const low=jp.map(p=>p.text).join(' ').toLowerCase();
+  const ws=low.replace(/[^\w\u00e0-\u00ff'\u2019]/g,' ').split(/\s+/).map(w=>w.replace(/^(?:l|un|d|all|dall|dell|nell|sull|quell)['\u2019]/,'')).filter(w=>w.length>=5&&!STOP.has(w)&&!/\d/.test(w));
+  const f={};ws.forEach(w=>f[w]=(f[w]||0)+1);
+  const ABS=/(t\u00e0|ismo|zione|sione|gione|ezza|enza|anza|ogia|edia|etto|aggio|ore|ura)$/;
+  const themes=Object.keys(f).filter(w=>f[w]>=2)
+    .sort((a,b)=>(f[b]+(ABS.test(b)?3:0))-(f[a]+(ABS.test(a)?3:0))).slice(0,3);
+  const EVAL=/ambizios|audac|esil|riuscit|potent|necessari|fragil|ricercat|convincent|sorprendent|pirotecnic|febbril|intens|radical|spiazzant|corrosiv|prezios|magnetic|ipnotic|vibrant|scarn|elegant|brutal|lucid|folgorant|matur|acerb|original|pretenzios|sincer|onest|coraggios/;
+  let best=null,bs=-1,bi=-1;
+  sents.forEach((s,i)=>{
+    if(s.length<60||s.length>210)return;
+    let sc=0;const sl=s.toLowerCase();
+    if(sl.includes(film.toLowerCase()))sc+=4;
+    if(EVAL.test(sl))sc+=3;
+    if(/film|esordio|pellicola|opera|racconto|narrazione/.test(sl))sc+=2;
+    sc+=(i/sents.length)*2;                       /* il giudizio sta in fondo */
+    if(/^(Ma |Eppure|Insomma|In definitiva|Alla fine|Dietro)/.test(s))sc+=1;
+    if(sc>bs){bs=sc;best=s;bi=i;}
+  });
+  /* se lo strillo resta corto, prosegui con la frase successiva */
+  if(best&&bi>-1&&sents[bi+1]&&(best.length+sents[bi+1].length)<235&&best.length<150)
+    best=best+' '+sents[bi+1];
+  const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+  const head=themes.length?cap(themes.join(', '))+'. ':'';
+  let out=head+(best||sents[0]);
+  if(film&&!out.toLowerCase().includes(film.toLowerCase()))
+    out=head+film+' di '+reg+': '+(best||sents[0]).replace(/^[A-Z\u00c0-\u00de]/,c=>c.toLowerCase());
+  if(out.length>260){out=out.slice(0,250);out=out.slice(0,Math.max(out.lastIndexOf(' '),200))+'\u2026';}
+  return out.trim();
+}
+/* ---------- meta descrizione: una frase intera che stia tra 115 e 158 caratteri ---------- */
+function buildMeta(film,reg){
+  const head='Recensione di '+film+' di '+reg+': ';
+  const jp=state.paras.filter(p=>p.align==='justify').slice(0,3);
+  const sents=[];
+  jp.forEach(p=>(p.text.match(/[^.!?]+[.!?]+[»"”’)]?/g)||[]).forEach(x=>{x=x.trim();if(x.length>=25&&!/^[«"“]/.test(x))sents.push(x);}));
+  if(!sents.length)return '';
+  const LOW=/^(Il|Lo|La|L|I|Gli|Le|Un|Una|Uno|In|Con|Per|Ma|E|È|Non|Che|Se|Quando|Dopo|Tra|Fra|Nel|Nella|Nei|Nelle|Nell|Sul|Sulla|Sull|Dal|Dalla|Dall|Da|Del|Della|Dell|Di|A|Al|Alla|All|Questo|Questa|Questi|Queste|Ogni|Tutto|Tutti|Anche|Come|Dove|Mentre|Eppure|Così|Qui|Ci|Si|C)(?=[\s'’])/;
+  const fit=x=>head+(LOW.test(x)?x.charAt(0).toLowerCase()+x.slice(1):x);
+  for(const x of sents){const md=fit(x);if(md.length>=115&&md.length<=158)return md;}
+  for(let i=0;i<sents.length-1;i++){const md=fit(sents[i]+' '+sents[i+1]);if(md.length>=115&&md.length<=158)return md;}
+  for(const x of sents){const md=fit(x);if(md.length>=90&&md.length<=158)return md;}
+  /* frase troppo lunga: taglio a fine inciso (virgola, punto e virgola, due punti, trattino) */
+  const clause=md=>{const cut=md.slice(0,158);
+    const k=Math.max(cut.lastIndexOf(', '),cut.lastIndexOf('; '),cut.lastIndexOf(': '),cut.lastIndexOf(' – '));
+    return k>=110?cut.slice(0,k).replace(/[,;:\s–]+$/,'')+'…':null;};
+  for(const x of sents){const md=fit(x);if(md.length>158){const c=clause(md);if(c)return c;}}
+  const long=sents.map(fit).find(md=>md.length>158);
+  if(long){const cut=long.slice(0,155);return cut.slice(0,cut.lastIndexOf(' ')).replace(/[,;:\s–]+$/,'')+'…';}
+  return fit(sents[0]);
+}
+/* tassonomie di regista e interpreti (anche senza accesso) */
+async function siteTax(pub){
+  if(state.tax.director||state.tax.starring)return state.tax;
+  try{const tx=await pub('/wp/v2/taxonomies');
+    for(const k in tx){const sl=(tx[k].slug||k).toLowerCase();
+      if(sl.includes('director'))state.tax.director=tx[k].rest_base;
+      if(sl.includes('starring'))state.tax.starring=tx[k].rest_base;}}catch(e){}
+  return state.tax;
+}
+/* ---------- immagini: scaricate in parallelo, senza doppioni ---------- */
+/* immagine in evidenza predefinita: un fotogramma ad alta risoluzione, poi il resto */
+function pickPreferred(){
+  if(!state.cands.length)return;
+  const fr=state.cands.filter(c=>c.label.startsWith('Fotogramma'));
+  pick(fr.find(c=>c.media.w>=1200)||fr[0]||state.cands.find(c=>c.media.w>=1200)||state.cands[0]);
+}
+/* nuove proposte per un altro film: tolgo quelle del film precedente (non i file caricati) */
+function resetCands(){
+  const keep=(state.cands||[]).filter(x=>x.label==='Caricata da te'),was=state.img1;
+  $('cands').innerHTML='';state.cands=[];state.img1=null;state.img1label='';$('img1i').textContent='';
+  keep.forEach(x=>{$('cands').appendChild(x.el);state.cands.push(x);});
+  const ks=keep.find(x=>x.media===was);if(ks)pick(ks);
+  if(state.img2auto)setImg2(null);
+}
+function bigImdb(s){return s.replace(/\._V1_[^.]*\.(jpg|png)/i,'._V1_.$1');}
+function near(a,b){if(!a||!b||a.length!==b.length)return false;let d=0;for(let i=0;i<a.length;i++)if(a[i]!==b[i]&&++d>5)return false;return true;}
+function fetchBlobs(list,ms){return Promise.all(list.map(it=>fetchT(it.u,{},ms||20000).then(r=>r.ok?r.blob():null).catch(()=>null)));}
+async function addImages(list,opt){
+  opt=opt||{};
+  const blobs=await fetchBlobs(list);
+  let added=0;
+  for(let i=0;i<list.length;i++){
+    if(opt.max&&added>=opt.max)break;
+    const b=blobs[i];if(!b||b.size<5000)continue;
+    try{const media=await processImage(b,document.createElement('div'),FRATIO);
+      if(state.cands.some(c=>near(c.media.hash,media.hash)))continue;
+      addCand(media,list[i].l,!!opt.select&&!state.img1&&added===0);added++;}catch(e){}
+  }
+  if(added)$('a5').style.display='inline';
+  return added;
+}
+/* ---------- compilazione automatica ---------- */
+async function autofill(){
+  const film=$('film').value.trim();
+  if(!film)return {info:[],fails:['manca il titolo del film']};
+  state.busy=true;
+  try{return await autofill0(film);}finally{state.busy=false;}
+}
+async function autofill0(film){
+  const info=[],fails=[];
+  /* Identificazione del film: TMDB (se attivo) e IMDb in parallelo; verifica con il regista
+     (filmografia), l'anno (programma, testo) e il contesto (festival / classico). */
+  if(state.progLines)applyProgramme();
+  const reg=$('regista').value.trim();
+  const hints=filmHints();
+  let hintYear=null;
+  if($('anno').value.trim()&&!$('anno').dataset.auto)hintYear=parseInt($('anno').value)||null;
+  AUTO_FIELDS.forEach(clearAuto);   /* un nuovo giro riparte da zero sui campi compilati in automatico */
+  const useTm=!!tmdbKey();
+  const [tmR,dR,dnR]=await Promise.allSettled([
+    useTm?tmdbFind(film,reg,hints,hintYear):Promise.resolve(null),
+    imdbSuggest(film.toLowerCase()),
+    reg?imdbSuggest(reg.toLowerCase()):Promise.resolve(null)]);
+  const tm=tmR.status==='fulfilled'?tmR.value:null;
+  if(useTm&&tmR.status==='rejected')fails.push('TMDB non risponde ('+((tmR.reason&&tmR.reason.message)||'errore')+'): uso IMDb e Wikidata');
+  const d=dR.status==='fulfilled'?dR.value:null;
+  let tdet=null;
+  if(tm&&tm.confident){try{tdet=await tmdbDetails(tm.top.tid);}catch(e){fails.push('TMDB: dettagli del film non disponibili ('+e.message+')');}}
+  const tmOk=!!tdet;
+  if(d===null&&!tmOk)fails.push('IMDb non raggiungibile da questa pagina (ho usato Wikidata/Wikipedia)');
+  /* filmografia del regista su IMDb ("Regista, Titolo (anno)"): ricava l'anno e,
+     se il film ha un titolo originale diverso (The Key = La Clef), lo aggiunge ai candidati */
+  let dirFilm=null;
+  const dn=dnR.status==='fulfilled'?dnR.value:null;
+  if(reg&&dn){
+    const nm=dn.find(x=>x.id&&x.id.startsWith('nm')&&sameName(x.l||'',reg));
+    const km=nm&&nm.s&&nm.s.match(/^[^,]*,\s*(.+?)\s*\((\d{4})\)/);
+    if(km){
+      dirFilm={title:km[1],y:parseInt(km[2])};
+      if(normName(dirFilm.title)===normName(film)&&!hintYear)hintYear=dirFilm.y;
+    }
+  }
+  if(tmOk&&!hintYear&&tdet.anno)hintYear=tdet.anno;
+  let wd=null;
+  try{wd=await wikidataFilm(film,reg,hintYear);}catch(e){if(!tmOk)fails.push('Wikidata non raggiungibile');}
+  const wdOk=!!wd&&((tmOk&&tdet.imdb&&wd.imdb)?wd.imdb===tdet.imdb:(wd.dirMatch||(!reg&&(!hintYear||!wd.anno||Math.abs(wd.anno-hintYear)<=1))));
+  let cands=[];
+  if(d){
+    cands=d.filter(x=>x.id&&x.id.startsWith('tt')).map(c=>Object.assign({},c,{score:scoreCand(c,film,hints,hintYear,wdOk?wd.imdb:null)}));
+  }
+  if(dirFilm){
+    /* il film del regista: con lo stesso titolo o con il titolo originale */
+    let pool=cands.filter(c=>c.y===dirFilm.y&&normName(c.l)===normName(dirFilm.title));
+    if(!pool.length&&normName(dirFilm.title)!==normName(film)){
+      try{const d2=await imdbSuggest(dirFilm.title.toLowerCase());
+        pool=(d2||[]).filter(x=>x.id&&x.id.startsWith('tt')&&x.y===dirFilm.y&&normName(x.l)===normName(dirFilm.title))
+          .map(c=>Object.assign({},c,{score:scoreCand(Object.assign({},c,{l:film}),film,hints,hintYear,null)-5}));
+        pool.forEach(c=>{if(!cands.find(x=>x.id===c.id))cands.push(c);});
+      }catch(e){}
+    }
+    pool.forEach(c=>{const cc=cands.find(x=>x.id===c.id);if(cc){cc.score+=8;cc.byDirector=true;}});
+  }
+  if(wdOk&&wd.imdb&&!cands.find(c=>c.id===wd.imdb))cands.push({id:wd.imdb,l:wd.label,y:wd.anno,s:(wd.cast||[]).join(', '),score:20});
+  cands.sort((a,b)=>b.score-a.score);
+  const tmList=tm?tm.cands.slice(0,5).map(c=>({key:'tmdb:'+c.tid,src:'tmdb',tid:c.tid,l:c.l,y:c.y,
+    s:[c.ot&&normName(c.ot)!==normName(c.l)?c.ot:'',c.dirs&&c.dirs.length?'regia '+c.dirs.join(', '):''].filter(Boolean).join(' · ')})):[];
+  let hit=null;
+  if(tmOk){
+    applyTmdb(tdet);
+    hit=(tdet.imdb&&cands.find(c=>c.id===tdet.imdb))||null;
+    if(!tdet.imdb){
+      const alt=cands.find(c=>c.y&&tdet.anno&&Math.abs(c.y-tdet.anno)<=1&&[tdet.title,tdet.ot,film].some(t=>normName(t)===normName(c.l)));
+      if(alt){hit=alt;setAuto('imdb','https://www.imdb.com/title/'+alt.id+'/');}
+    }
+    state.filmCands=tmList.concat(cands.filter(c=>c.id!==tdet.imdb).slice(0,4));
+    renderFilmPick('tmdb:'+tdet.tid);
+    const alias=[...new Set([tdet.title,tdet.ot].filter(t=>t&&normName(t)!==normName(film)))];
+    info.push('film individuato su TMDB: «'+(tdet.title||film)+'» ('+(tdet.anno||'anno?')+')'+(tm.top.dirMatch?', verificato dal regista':'')+(alias.length?' — titoli: '+alias.join(' / '):''));
+    if(tdet.ytIt)info.push('trailer italiano trovato');else if(tdet.ytOrig)info.push('trailer ufficiale trovato (nessun trailer italiano su TMDB)');
+  }else{
+    const top=cands[0]||null;
+    const second=cands[1]||null;
+    const confident=!!top&&((wdOk&&wd.imdb===top.id)||(hintYear&&top.y&&Math.abs(top.y-hintYear)<=1&&normName(top.l)===normName(film))||top.score>=8||(top.score>=5&&(!second||top.score-second.score>=4)));
+    state.filmCands=cands.slice(0,6).concat(tmList.slice(0,3));
+    renderFilmPick(confident?top.id:'');
+    if(confident){
+      hit=top;applyCand(top);
+      info.push('film individuato: «'+top.l+'» ('+(top.y||'anno?')+')'+(top.byDirector||(wdOk&&wd.imdb===top.id)?', verificato dal regista':'')+(normName(top.l)!==normName(film)?' — titolo originale di «'+film+'»':''));
+    }else{
+      if(cands.length||tmList.length)fails.push('non sono sicuro di quale «'+film+'» sia quello recensito (ce ne sono del '+[...new Set(cands.concat(tm?tm.cands:[]).slice(0,5).map(c=>c.y||'?'))].join(', ')+'): sceglilo in «Film individuato» al passo 3, oppure carica il programma del festival');
+      else fails.push('non trovo «'+film+'» su IMDb: compila anno e interpreti a mano, o carica il programma del festival');
+    }
+  }
+
+  /* Wikidata: usato solo se corrisponde al film giusto; con TMDB riempie solo i campi vuoti */
+  if(wd&&wdOk){
+    const W=tmOk?fillEmpty:setAuto;
+    if(wd.imdb)fillEmpty('imdb','https://www.imdb.com/title/'+wd.imdb+'/');
+    W('anno',wd.anno?String(wd.anno):'');
+    if(wd.durata)W('durata',wd.durata+"'");
+    if(wd.cast&&wd.cast.length)fillEmpty('cast',wd.cast.join(', '));
+    if(wd.paese)W('paese',wd.paese);
+    if(!$('regista').value&&wd.regista)$('regista').value=wd.regista;
+    if(wd.ytIt&&!$('trailerIt').value.trim()){fillEmpty('trailerIt','https://www.youtube.com/watch?v='+wd.ytIt);info.push('trailer italiano trovato su Wikidata');}
+    if(wd.ytOrig&&!$('trailerOrig').value.trim()){fillEmpty('trailerOrig','https://www.youtube.com/watch?v='+wd.ytOrig);if(!tmOk)info.push('trailer ufficiale trovato su Wikidata');}
+    if(!tmOk)info.push('Wikidata: «'+(wd.label||film)+'»'+(wd.desc?' ('+wd.desc+')':''));
+  }else if(wd&&reg&&!tmOk){
+    info.push('Wikidata: nessun «'+film+'» diretto da '+reg);
+  }
+  syncTrailer(!$('trailerSel').dataset.touched);
+  if($('imdb').value||$('anno').value||$('cast').value)$('a3').style.display='inline';
+  /* controlli di coerenza sulle fonti */
+  const yFound=tmOk?tdet.anno:(hit&&hit.y);
+  if(state.prog&&yFound&&state.prog.anno&&Math.abs(yFound-parseInt(state.prog.anno))>1)
+    fails.push('l’anno trovato in rete ('+yFound+') non coincide con quello del programma ('+state.prog.anno+'): verifica il film scelto');
+  if(!tmOk&&hit&&wd&&wdOk&&hit.y&&wd.anno&&String(hit.y)!==String(wd.anno))
+    fails.push('anno discordante tra IMDb ('+hit.y+') e Wikidata ('+wd.anno+'): verifica');
+
+  /* durata via SPARQL se ancora vuota e conosco l'id IMDb */
+  const ttid=($('imdb').value.match(/tt\d+/)||[])[0];
+  if(!$('durata').value&&ttid){
+    try{
+      const sq='SELECT ?d WHERE { ?f wdt:P345 "'+ttid+'". ?f wdt:P2047 ?d. } LIMIT 1';
+      const w=await (await fetchT('https://query.wikidata.org/sparql?format=json&query='+encodeURIComponent(sq),{headers:{Accept:'application/sparql-results+json'}},12000)).json();
+      const b=w.results.bindings[0];
+      if(b)fillEmpty('durata',mins(parseFloat(b.d.value))+"'");
+    }catch(e){}
+  }
+
+  /* iTunes Store: durata e locandina di riserva (riempie solo i campi vuoti) */
+  let itn=null;
+  try{
+    const its=await itunesFilm(film);
+    if(its&&its.length){
+      const rl=$('regista').value.trim();
+      const yy=parseInt($('anno').value)||null;
+      itn=its.find(x=>normName(x.trackName)===normName(film)&&(rl?normName(x.artistName).includes(normName(rl).split(' ').pop()):(!yy||Math.abs(parseInt((x.releaseDate||'').slice(0,4))-yy)<=1)))||null;
+      if(itn){
+        if(itn.trackTimeMillis)fillEmpty('durata',mins(itn.trackTimeMillis/60000)+"'");
+        if(itn.releaseDate)fillEmpty('anno',itn.releaseDate.slice(0,4));
+      }
+    }
+  }catch(e){}
+  const durN=parseInt($('durata').value)||0;
+  if(durN&&(durN<40||durN>240))fails.push('durata insolita ('+$('durata').value+'): verificala');
+
+  /* proposte per l'immagine in evidenza (fino a 6): prima i fotogrammi, poi le locandine */
+  $('cands').innerHTML='';state.cands=[];state.img1=null;state.img1label='';
+  if(state.img2auto)setImg2(null);
+  const urls=[];
+  if(tdet)urls.push(...tdet.imgs);
+  if(hit&&hit.v)hit.v.forEach(v=>{if(v.i&&v.i.imageUrl)urls.push({u:bigImdb(v.i.imageUrl),l:'Fotogramma dal video (IMDb)'});});
+  const trm=$('trailer').value.trim().match(/(?:v=|youtu\.be\/|shorts\/)([\w-]{6,})/);
+  if(trm)urls.push(...ytFrames(trm[1]));
+  if(hit&&hit.i&&hit.i.imageUrl)urls.push({u:bigImdb(hit.i.imageUrl),l:'Locandina (IMDb)'});
+  if(wd&&wdOk&&wd.wiki){
+    try{
+      const w=await (await fetchT('https://'+wd.wiki.l+'.wikipedia.org/w/api.php?action=query&prop=pageimages&piprop=original&format=json&origin=*&titles='+encodeURIComponent(wd.wiki.t),{},10000)).json();
+      const pg=w.query&&w.query.pages&&Object.values(w.query.pages)[0];
+      if(pg&&pg.original&&pg.original.source)urls.push({u:pg.original.source,l:'Locandina (Wikipedia)'});
+    }catch(e){}
+  }
+  if(wd&&wdOk&&wd.commons)urls.push({u:'https://commons.wikimedia.org/wiki/Special:FilePath/'+encodeURIComponent(wd.commons)+'?width=1800',l:'Immagine (Wikimedia)'});
+  if(itn&&itn.artworkUrl100)urls.push({u:itn.artworkUrl100.replace(/100x100bb/,'2000x2000bb'),l:'Locandina (iTunes)'});
+  const rank=l=>/^Fotogramma/.test(l)?0:/^Immagine/.test(l)?1:2;
+  urls.sort((a,b)=>rank(a.l)-rank(b.l));
+  const caps={'Fotogramma (TMDB)':3,'Fotogramma dal video (IMDb)':2,'Fotogramma dal trailer':tdet?2:4};
+  const maxStill=urls.some(u=>rank(u.l)===2)?5:6;
+  const list=urls.slice(0,24);
+  const blobs=await fetchBlobs(list);
+  const cnt={};let added=0,still=0,post=0;
+  for(let i=0;i<list.length&&added<6;i++){
+    const it=list[i],b=blobs[i];if(!b||b.size<5000)continue;
+    const r=rank(it.l);
+    if(r<2&&still>=maxStill)continue;
+    if(r===2&&post>=2)continue;
+    if(caps[it.l]&&(cnt[it.l]||0)>=caps[it.l])continue;
+    try{
+      const media=await processImage(b,document.createElement('div'),FRATIO);
+      if(state.cands.some(c=>near(c.media.hash,media.hash)))continue;
+      addCand(media,it.l,false);added++;cnt[it.l]=(cnt[it.l]||0)+1;if(r<2)still++;else post++;
+    }catch(e){}
+  }
+  if(added){
+    pickPreferred();$('a5').style.display='inline';
+    info.push(added>1?added+' immagini proposte (scegline una al passo 5)':'1 immagine proposta');
+  }else if(urls.length)fails.push('immagini trovate ma non scaricabili da questa pagina: carica un file al passo 5');
+  else fails.push('nessuna immagine trovata in rete: carica un file al passo 5');
+  autoImg2();
+  if(state.img2auto)info.push('seconda immagine scelta (manca il trailer)');
+
+  /* «Leggi anche» dal sito: stesso regista, poi interpreti in comune, poi recensioni recenti */
+  {
+    const site=$('site').value.replace(/\/+$/,'');
+    let errs=0;
+    const pub=async p=>{try{const r=await fetchT(site+'/wp-json'+p,{},12000);if(!r.ok)throw new Error('HTTP '+r.status);return await r.json();}catch(e){errs++;return [];}};
+    const fl=normName(film);
+    const posts=[],why=new Set();
+    const addp=(arr,w)=>(Array.isArray(arr)?arr:[]).forEach(p=>{
+      if(posts.length<2&&p&&p.title&&!normName(decodeEnt(p.title.rendered)).includes(fl)&&!posts.find(x=>x.link===p.link)){posts.push(p);why.add(w);}});
+    const tx=await siteTax(pub);
+    const byTerm=async(base,name,w)=>{
+      if(!base||!name||posts.length>=2)return;
+      const ts=await pub('/wp/v2/'+base+'?search='+encodeURIComponent(name.split(' ').pop())+'&per_page=20&_fields=id,name');
+      const t=(Array.isArray(ts)?ts:[]).find(x=>sameName(decodeEnt(x.name),name));
+      if(t)addp(await pub('/wp/v2/posts?'+base+'='+t.id+'&per_page=5&_fields=link,title'),w);
+    };
+    const reg1=$('regista').value.trim();
+    await byTerm(tx.director,reg1,'stesso regista');
+    if(reg1&&posts.length<2)addp(await pub('/wp/v2/posts?search='+encodeURIComponent(reg1)+'&per_page=4&_fields=link,title'),'stesso regista');
+    for(const a of $('cast').value.split(',').map(x=>x.trim()).filter(Boolean).slice(0,3))await byTerm(tx.starring,a,'interpreti in comune');
+    if(posts.length<2){
+      const cs=await pub('/wp/v2/categories?search=Recensioni&_fields=id,name');
+      const c=(Array.isArray(cs)?cs:[]).find(x=>x.name==='Recensioni');
+      if(c)addp(await pub('/wp/v2/posts?categories='+c.id+'&per_page=4&_fields=link,title'),'recensioni recenti');
+    }
+    if(posts[0]&&!$('la1u').value){$('la1u').value=posts[0].link;$('la1t').value=decodeEnt(posts[0].title.rendered);}
+    if(posts[1]&&!$('la2u').value){$('la2u').value=posts[1].link;$('la2t').value=decodeEnt(posts[1].title.rendered);}
+    if(posts.length)info.push('«Leggi anche» proposti dal sito ('+[...why].join(', ')+')');
+    else if(errs)fails.push('sito non raggiungibile per i «Leggi anche»');
+  }
+
+  /* SEO */
+  const reg2=$('regista').value.trim();
+  if(film&&reg2&&state.paras.length){
+    if(!$('metaDesc').dataset.touched){const md=buildMeta(film,reg2);if(md)$('metaDesc').value=md;}
+    if(!$('excerpt').dataset.touched){const ex=buildExcerpt(film,reg2);if(ex)$('excerpt').value=ex;}
+    $('a6').style.display='inline';
+  }
+  syncMeta();$('btnCheck').click();
+  return {info,fails};
+}
+$('btnAuto').onclick=async()=>{
+  if(!$('film').value.trim()&&state.paras.length){
+    const det=detectFilm();
+    if(det){$('film').value=det.film;if(det.reg&&!$('regista').value)$('regista').value=det.reg;syncMeta();}
+  }
+  if(!$('film').value.trim()){msg('mAuto','err','Scrivi almeno il titolo del film qui sopra (non sono riuscito a rilevarlo dal testo).');return;}
+  msg('mAuto','ok','Cerco in rete…');
+  const res=await autofill();
+  const head=res.info.length?'Compilato: '+res.info.join('; ')+'. ':'Nessun dato trovato in rete: compila i campi a mano. ';
+  msg('mAuto',res.fails.length?'warn':'ok',head+(res.fails.length?'Attenzione: '+res.fails.join('; ')+'.':''));
+};
+
+/* ---------- campi derivati ---------- */
+function slugify(s){return s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/['\u2018\u2019]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');}
+function syncMeta(){
+  const f=$('film').value.trim(),r=$('regista').value.trim(),a=$('anno').value.trim();
+  if(f&&r&&!$('slug').dataset.touched)$('slug').value=slugify(f+' di '+r);
+  if(f&&!$('kw').dataset.touched)$('kw').value=f;
+  if(f&&r&&!$('seoTitle').dataset.touched)$('seoTitle').value=f+(a?' ('+a+')':'')+': recensione del film di '+r;
+  $('prevTitle').textContent=f&&r?f+' di '+r:'—';
+  if(f){$('ytSearchIt').href='https://www.youtube.com/results?search_query='+encodeURIComponent((f+' '+r+' trailer italiano').trim());
+    $('ytSearchOrig').href='https://www.youtube.com/results?search_query='+encodeURIComponent((f+' '+r+' official trailer').trim());}
+  $('stLen').textContent=$('seoTitle').value.length+' car.';
+  $('mdLen').textContent=$('metaDesc').value.length+' car. (ideale 120–158)';
+}
+['film','regista','anno'].forEach(id=>$(id).addEventListener('input',syncMeta));
+function syncTrailer(auto){
+  const it=$('trailerIt').value.trim(),og=$('trailerOrig').value.trim();
+  if(auto)$('trailerSel').value=it?'it':'orig';
+  const v=$('trailerSel').value==='it'?it:og;
+  if($('trailer').value!==v){$('trailer').value=v;$('trailer').dispatchEvent(new Event('change'));}
+}
+['trailerIt','trailerOrig'].forEach(id=>$(id).addEventListener('change',()=>syncTrailer(!$('trailerSel').dataset.touched)));
+$('filmSel').addEventListener('change',async()=>{
+  const v=$('filmSel').value;
+  const c=(state.filmCands||[]).find(x=>(x.key||x.id)===v)||null;
+  AUTO_FIELDS.forEach(clearAuto);
+  resetCands();
+  state.busy=true;
+  try{
+    if(c&&c.src==='tmdb'){
+      msg('mAuto','ok','Carico i dati da TMDB…');
+      try{
+        const t=await tmdbDetails(c.tid);applyTmdb(t);syncTrailer(!$('trailerSel').dataset.touched);
+        const tr=$('trailer').value.trim().match(/(?:v=|youtu\.be\/|shorts\/)([\w-]{6,})/);
+        await addImages(t.imgs.concat(tr?ytFrames(tr[1]).slice(0,4):[]),{max:6});
+        msg('mAuto','ok','Dati e immagini aggiornati da TMDB: «'+t.title+'» ('+(t.anno||'anno?')+').');
+      }catch(e){msg('mAuto','err','TMDB: '+e.message);}
+    }else{
+      applyCand(c);syncTrailer(!$('trailerSel').dataset.touched);
+      const L2=[];
+      if(c&&c.v)c.v.forEach(v=>{if(v.i&&v.i.imageUrl)L2.push({u:bigImdb(v.i.imageUrl),l:'Fotogramma dal video (IMDb)'});});
+      if(c&&c.i&&c.i.imageUrl)L2.push({u:bigImdb(c.i.imageUrl),l:'Locandina (IMDb)'});
+      if(L2.length)await addImages(L2,{max:6});
+    }
+  }finally{state.busy=false;}
+  if(!state.img1)pickPreferred();
+  autoImg2();
+  syncMeta();$('btnCheck').click();
+});
+AUTO_FIELDS.forEach(id=>$(id).addEventListener('input',()=>{delete $(id).dataset.auto;}));
+$('btnProg').addEventListener('click',async()=>{
+  try{
+    let buf=null;
+    const f=$('progFile').files[0];
+    if(f)buf=await f.arrayBuffer();
+    else if($('progUrl').value.trim()){
+      try{const r=await fetchT($('progUrl').value.trim(),{},25000);if(!r.ok)throw 0;buf=await r.arrayBuffer();}
+      catch(e){msg('mProg','warn','Il sito del festival non permette di leggere il PDF da qui: scaricalo e caricalo con \u00abScegli file\u00bb.');return;}
+    }else{msg('mProg','err','Incolla il link al PDF del programma o caricalo dal computer.');return;}
+    msg('mProg','ok','Leggo il programma\u2026');
+    state.progLines=await pdfLines(buf);
+    if(applyProgramme()&&state.paras.length)$('btnAuto').click();
+  }catch(e){msg('mProg','err','Lettura del programma non riuscita: '+e.message);}
+});
+$('trailerSel').addEventListener('change',()=>{$('trailerSel').dataset.touched=1;syncTrailer(false);});
+$('trailer').addEventListener('change',async()=>{
+  if(state.paras.length)renderParas();
+  const tr=$('trailer').value.trim();
+  if(tr&&state.img2auto)setImg2(null);
+  if(!tr)autoImg2();
+  $('btnCheck').click();
+  if(state.busy)return;   /* durante la compilazione automatica i fotogrammi li aggiunge autofill */
+  const m=tr.match(/(?:v=|youtu\.be\/|shorts\/)([\w-]{6,})/);
+  if(!m)return;
+  if(!state.cands.find(c=>c.label==='Fotogramma dal trailer'))await addImages(ytFrames(m[1]),{max:4,select:true});
+  $('btnCheck').click();
+});
+['slug','kw','seoTitle','excerpt','metaDesc'].forEach(id=>{
+  $(id).addEventListener('input',e=>{e.target.dataset.touched=1;syncMeta();});});
+
+/* ---------- immagini ---------- */
+function loadImage(blob){return new Promise((ok,ko)=>{const u=URL.createObjectURL(blob);const im=new Image();im.onload=()=>ok(im);im.onerror=ko;im.src=u;});}
+const FRATIO=768/539; /* formato dell'immagine in evidenza del tema */
+/* mappa di «interesse» per il ritaglio: contorni, saturazione e toni della pelle */
+function energyProfile(d,aw,x0,y0,x1,y1,axis){
+  const n=axis==='x'?x1-x0+1:y1-y0+1;const prof=new Float64Array(Math.max(1,n));
+  const L=k=>0.299*d[k]+0.587*d[k+1]+0.114*d[k+2];
+  for(let y=y0+1;y<y1;y++)for(let x=x0+1;x<x1;x++){
+    const k=(y*aw+x)*4,R=d[k],G=d[k+1],B=d[k+2];
+    let e=Math.abs(L(k+4)-L(k-4))+Math.abs(L(k+aw*4)-L(k-aw*4));
+    const mx=Math.max(R,G,B),mn=Math.min(R,G,B);
+    if(R>95&&G>40&&B>20&&R>G&&R>B&&mx-mn>15&&R-G>15)e+=60;   /* pelle: favorisce i volti */
+    e+=(mx-mn)*0.15;
+    prof[axis==='x'?x-x0:y-y0]+=e;
+  }
+  return prof;
+}
+/* finestra con più interesse: i bordi della finestra contano meno (il soggetto non resta
+   attaccato al margine) e c'è una leggera preferenza per il centro (bias = posizione preferita 0..1) */
+function bestWindow(prof,win,bias){
+  const n=prof.length;win=Math.max(1,Math.min(n,Math.round(win)));
+  if(win>=n)return 0;
+  const wt=new Float64Array(win);
+  for(let i=0;i<win;i++){const t=(i+0.5)/win;wt[i]=t<0.12?0.4+5*t:t>0.88?0.4+5*(1-t):1;}
+  const maxOff=n-win,center=maxOff*bias,span=Math.max(center,maxOff-center,1);
+  const step=Math.max(1,Math.floor(maxOff/300));
+  let best=-1,bi=Math.round(center);
+  for(let o=0;o<=maxOff;o+=step){
+    let sum=0;for(let i=0;i<win;i++)sum+=prof[o+i]*wt[i];
+    const v=sum*(1-0.3*Math.abs(o-center)/span);
+    if(v>best){best=v;bi=o;}
+  }
+  return bi;
+}
+async function processImage(blob,info,ratio){
+  const im=await loadImage(blob);
+  const W=im.naturalWidth,H=im.naturalHeight;
+  /* analisi su una copia ridotta (veloce anche sulle immagini 4K) */
+  const ds=Math.min(1,800/Math.max(W,H));
+  const aw=Math.max(2,Math.round(W*ds)),ah=Math.max(2,Math.round(H*ds));
+  const ca=document.createElement('canvas');ca.width=aw;ca.height=ah;
+  const xa=ca.getContext('2d',{willReadFrequently:true});xa.drawImage(im,0,0,aw,ah);
+  const d=xa.getImageData(0,0,aw,ah).data;
+  const rm=y=>{let s=0,n=0;for(let i=0;i<aw;i+=2){const k=(y*aw+i)*4;s+=d[k]+d[k+1]+d[k+2];n++;}return s/n/3;};
+  const cm=q=>{let s=0,n=0;for(let i=0;i<ah;i+=2){const k=(i*aw+q)*4;s+=d[k]+d[k+1]+d[k+2];n++;}return s/n/3;};
+  /* bande nere */
+  let t=0,b=ah-1,l=0,r=aw-1;
+  while(t<ah/3&&rm(t)<14)t++;while(b>ah*2/3&&rm(b)<14)b--;
+  while(l<aw/3&&cm(l)<14)l++;while(r>aw*2/3&&cm(r)<14)r--;
+  const bars=t>0||l>0||b<ah-1||r<aw-1;
+  const m=Math.ceil(1/ds)+2;   /* margine oltre la banda, in pixel originali */
+  let T=t>0?Math.round(t/ds)+m:0,Bo=b<ah-1?Math.round((b+1)/ds)-1-m:H-1;
+  let Lx=l>0?Math.round(l/ds)+m:0,Ro=r<aw-1?Math.round((r+1)/ds)-1-m:W-1;
+  let sw=Ro-Lx+1,sh=Bo-T+1;
+  if(sw<16||sh<16){T=0;Lx=0;sw=W;sh=H;}
+  let smart=false;
+  if(ratio){ /* ritaglio al formato richiesto, dove l'immagine ha più interesse */
+    if(sw/sh>ratio){const nw=Math.round(sh*ratio);
+      const o=bestWindow(energyProfile(d,aw,l,t,r,b,'x'),nw*ds,0.5);
+      const off=Math.min(sw-nw,Math.max(0,Math.round(o/ds)));smart=Math.abs(off-(sw-nw)/2)>(sw-nw)*0.1;
+      Lx+=off;sw=nw;}
+    else if(sw/sh<ratio){const nh=Math.round(sw/ratio);
+      const o=bestWindow(energyProfile(d,aw,l,t,r,b,'y'),nh*ds,0.4);
+      const off=Math.min(sh-nh,Math.max(0,Math.round(o/ds)));smart=Math.abs(off-(sh-nh)*0.4)>(sh-nh)*0.1;
+      T+=off;sh=nh;}
+  }
+  /* compressione: la qualità più alta che resta sotto i 500 KB; se il file resta sotto
+     i 200 KB, qualità o risoluzione più alte (mai oltre l'originale) */
+  const MAXB=500*1024,MINB=200*1024;
+  const widths=ratio?[1536,1920,2400]:[1600,2000,2400];
+  let out=null,w=0,h=0,c2=null;
+  for(let wi=0;wi<widths.length;wi++){
+    w=Math.min(widths[wi],sw);h=ratio?Math.round(w/ratio):Math.round(sh*w/sw);
+    c2=document.createElement('canvas');c2.width=w;c2.height=h;
+    const x2=c2.getContext('2d');x2.imageSmoothingQuality='high';x2.drawImage(im,Lx,T,sw,sh,0,0,w,h);
+    const enc=q=>new Promise(z=>c2.toBlob(z,'image/jpeg',q));
+    out=await enc(0.95);
+    if(out.size>MAXB){
+      let lo=0.5,hi=0.95,best=null;
+      for(let k=0;k<6;k++){const q=(lo+hi)/2;const bb=await enc(q);if(bb.size<=MAXB){best=bb;lo=q;}else hi=q;}
+      out=best||await enc(0.5);
+    }else if(out.size<MINB){
+      const o2=await enc(0.98);if(o2.size<=MAXB)out=o2;
+    }
+    if(out.size>=MINB||w>=sw||wi===widths.length-1)break;
+  }
+  /* impronta visiva (dHash 8×8) per scartare le proposte quasi uguali */
+  const hc=document.createElement('canvas');hc.width=36;hc.height=32;
+  const hx=hc.getContext('2d',{willReadFrequently:true});hx.imageSmoothingQuality='high';hx.drawImage(c2,0,0,36,32);
+  const hd=hx.getImageData(0,0,36,32).data;
+  const cell=(cx,cy)=>{let v=0;for(let y=cy*4;y<cy*4+4;y++)for(let x=cx*4;x<cx*4+4;x++){const k=(y*36+x)*4;v+=hd[k]+hd[k+1]+hd[k+2];}return v;};
+  let hash='';
+  for(let y=0;y<8;y++)for(let x=0;x<8;x++)hash+=cell(x,y)>cell(x+1,y)?'1':'0';
+  const kb=Math.round(out.size/1024);
+  info.textContent=w+'×'+h+' px'+(ratio?' (formato 768×539)':'')+', '+kb+' KB'+(w<1200?' — risoluzione bassa per un’immagine in evidenza':'')+(kb<200?' — sotto i 200 KB: se puoi usa un’immagine più grande':'')+(bars?' (bande nere rimosse)':'')+(smart?' (ritaglio sul soggetto)':'');
+  return {blob:out,w,h,url:URL.createObjectURL(out),hash};
+}
+function addCand(media,label,sel){
+  state.cands=state.cands||[];
+  const c={media,label};state.cands.push(c);
+  const d=document.createElement('div');d.className='cand';
+  d.innerHTML='<img src="'+media.url+'"><div class="cl">'+esc(label)+' · '+media.w+'×'+media.h+' · '+Math.round(media.blob.size/1024)+' KB</div>';
+  d.onclick=()=>pick(c);
+  $('cands').appendChild(d);c.el=d;
+  if(sel)pick(c);
+}
+function pick(c){
+  state.img1=c.media;state.img1label=c.label;
+  [...$('cands').children].forEach(x=>x.classList.remove('sel'));
+  c.el.classList.add('sel');
+  $('img1i').textContent='Scelta: '+c.label+' ('+c.media.w+'×'+c.media.h+', '+Math.round(c.media.blob.size/1024)+' KB)';
+  if(state.img2auto&&state.img2===c.media)autoImg2();
+}
+/* seconda immagine: se manca il trailer, un fotogramma diverso da quello in evidenza */
+function setImg2(media,label,auto){
+  state.img2=media||null;state.img2auto=!!(media&&auto);
+  const p=$('img2p');
+  if(media){p.src=media.url;p.style.display='block';$('img2x').style.display='';
+    $('img2i').textContent=(auto?'Scelta in automatico tra le proposte ('+label+'), perché manca il trailer: puoi sostituirla con un tuo file o toglierla. ':'')+media.w+'×'+media.h+' px, '+Math.round(media.blob.size/1024)+' KB';}
+  else{p.removeAttribute('src');p.style.display='none';$('img2x').style.display='none';$('img2i').textContent='';}
+}
+function autoImg2(){
+  if($('trailer').value.trim()){if(state.img2auto)setImg2(null);return;}
+  if(state.img2off||(state.img2&&!state.img2auto))return;
+  const h1=state.img1&&state.img1.hash;
+  const c=(state.cands||[]).find(x=>x.media!==state.img1&&/^(Fotogramma|Immagine)/.test(x.label)&&!near(x.media.hash,h1))||null;
+  setImg2(c?c.media:null,c?c.label:'',true);
+}
+$('img1').onchange=async e=>{if(!e.target.files[0])return;const media=await processImage(e.target.files[0],document.createElement('div'),FRATIO);addCand(media,'Caricata da te',true);$('a5').style.display='none';};
+$('img2').onchange=async e=>{if(!e.target.files[0])return;const inf=document.createElement('div');
+  const media=await processImage(e.target.files[0],inf);state.img2off=false;setImg2(media,'',false);$('img2i').textContent='Caricata da te: '+inf.textContent;$('btnCheck').click();};
+$('img2x').onclick=()=>{setImg2(null);state.img2off=true;$('img2').value='';$('btnCheck').click();};
+
+/* ---------- struttura ---------- */
+/* dove dividere: a circa il 45% delle parole, mai prima del primo paragrafo giustificato
+   e senza che il secondo blocco cominci con un'epigrafe o un verso */
+function defaultSplit(list){
+  const n=list.length;if(n<2)return 0;
+  const wc=list.map(p=>p.text.split(/\s+/).filter(Boolean).length);
+  const tot=wc.reduce((a,b)=>a+b,0)||1;
+  const firstJ=Math.max(0,list.findIndex(p=>p.align==='justify'));
+  let best=Math.max(0,Math.ceil(n/2)-1),bd=1e9,cum=0;
+  for(let i=0;i<n-1;i++){
+    cum+=wc[i];
+    if(i<firstJ||list[i+1].align!=='justify')continue;
+    const dd=Math.abs(cum/tot-0.45);
+    if(dd<bd){bd=dd;best=i;}
+  }
+  return best;
+}
+function renderParas(){
+  const el=$('parList');el.innerHTML='';
+  if(!state.paras.length)return;
+  state.split=Math.min(state.split,Math.max(0,state.paras.length-2));
+  const mk=(cls,html)=>{const d=document.createElement('div');d.className=cls;d.innerHTML=html;return d;};
+  const OPT='<option value="justify">giustificato</option><option value="center">centrato</option><option value="right">a destra</option><option value="left">a sinistra</option>';
+  el.appendChild(mk('blkhead','Primo blocco'));
+  state.paras.forEach((p,i)=>{
+    const d=mk('pv','<span class="txt" title="clicca per leggere tutto"></span><select title="allineamento del paragrafo">'+OPT+'</select>');
+    d.querySelector('.txt').textContent=p.text;
+    d.querySelector('.txt').onclick=ev=>ev.target.classList.toggle('open');
+    const s=d.querySelector('select');s.value=p.align;s.onchange=()=>p.align=s.value;
+    el.appendChild(d);
+    if(i<state.paras.length-1){
+      if(i===state.split){
+        const what=$('trailer').value.trim()?'il trailer':'il trailer (o la seconda immagine)';
+        el.appendChild(mk('sep on','<span class="ln"></span><span>\u25B6 Qui va '+what+'</span><span class="ln"></span>'));
+        el.appendChild(mk('blkhead','Secondo blocco'));
+      }else{
+        const sp=mk('sep','<span class="ln"></span><span>sposta qui</span><span class="ln"></span>');
+        sp.onclick=()=>{state.split=i;renderParas();};
+        el.appendChild(sp);
+      }
+    }
+  });
+}
+
+/* ---------- verifiche ---------- */
+function bodyText(){return state.paras.map(p=>p.text).join(' ');}
+function checks(){
+  const f=$('film').value.trim(),kw=$('kw').value.trim().toLowerCase();
+  const txt=bodyText();const low=txt.toLowerCase();
+  const words=txt.split(/\s+/).filter(Boolean).length;
+  const occ=kw?low.split(kw).length-1:0;
+  const first10=kw&&low.slice(0,Math.max(200,low.length/10)).includes(kw);
+  const md=$('metaDesc').value,st=$('seoTitle').value,ex=$('excerpt').value,sl=$('slug').value;
+  return [
+    ['Almeno 600 parole ('+words+')',words>=600],
+    ['Titolo del film nelle prime righe',first10],
+    ['Titolo del film nel testo almeno 5 volte ('+occ+')',occ>=5],
+    ['Parola chiave nel titolo SEO',kw&&st.toLowerCase().includes(kw)],
+    ['Titolo SEO ≤ 60 caratteri ('+st.length+')',st.length>0&&st.length<=60],
+    ['Parola chiave nella meta descrizione',kw&&md.toLowerCase().includes(kw)],
+    ['Meta descrizione 80–158 caratteri ('+md.length+')',md.length>=80&&md.length<=158],
+    ['Riassunto che contiene il titolo del film',f&&ex.toLowerCase().includes(f.toLowerCase())],
+    ['Permalink con titolo e autore',kw&&sl.includes(slugify(f))],
+    ['Immagine in evidenza pronta',!!state.img1],
+    ['Seconda immagine o trailer',!!state.img2||!!$('trailer').value.trim()],
+    ['Scheda tecnica: link IMDb indicato',!!$('imdb').value.trim()],
+    ['«Leggi anche»: almeno un link interno',!!$('la1u').value.trim()],
+  ];
+}
+$('btnCheck').onclick=()=>{
+  const el=$('checks');el.innerHTML='';
+  checks().forEach(([t,ok])=>{const d=document.createElement('div');if(ok)d.className='pass';d.textContent=t;el.appendChild(d);});
+  predictSEO();
+};
+function predictSEO(){
+  const kw=$('kw').value.trim().toLowerCase(),f=$('film').value.trim();
+  if(!kw||!state.paras.length){$('predict').innerHTML='';return;}
+  const txt=bodyText(),low=txt.toLowerCase();
+  const words=txt.split(/\s+/).filter(Boolean).length;
+  const occ=low.split(kw).length-1;
+  const dens=words?occ*kw.split(/\s+/).length/words*100:0;
+  const st=$('seoTitle').value.toLowerCase(),md=$('metaDesc').value.toLowerCase(),sl=$('slug').value;
+  const hasTrailer=!!$('trailer').value.trim();
+  /* pesi di Rank Math, calibrati sui punteggi reali misurati (58/74/75) */
+  const items=[
+    [32,st.includes(kw)],
+    [2, md.includes(kw)],
+    [5, f&&sl.includes(slugify(f))],
+    [3, low.slice(0,Math.max(200,low.length/10)).includes(kw)],
+    [2, occ>0],
+    [words>=600?8:(words>=300?4:0), true],
+    [3, true],
+    [2, !!state.img1],
+    [dens>=1&&dens<=2.5?6:(dens>=0.5?3:0), true],
+    [4, sl.length<=75],
+    [4, !!$('imdb').value.trim()],
+    [2, !!$('imdb').value.trim()],
+    [5, !!$('la1u').value.trim()],
+    [3, st.indexOf(kw)===0],
+    [1, /\d/.test($('seoTitle').value)],
+    [3, !state.paras.some(p=>p.text.split(/\s+/).length>150)],
+    [6, !!state.img2||hasTrailer],
+  ];
+  const s=Math.min(100,items.reduce((a,x)=>a+(x[1]?x[0]:0),0));
+  const lo=Math.max(0,s-7);
+  done(6,lo>=70);
+  $('predict').innerHTML='Punteggio SEO previsto: <b>'+lo+'\u2013'+s+' / 100</b>'
+    +'<div class="hint">Stima con i pesi di Rank Math: il conteggio vero lo fa Rank Math nella bozza (obiettivo 70+, minimo 55). Densit\u00e0 parola chiave: '+dens.toFixed(2)+'%'
+    +(dens<0.5?' \u2014 bassa: 1\u20132 occorrenze in pi\u00f9 del titolo nel testo valgono fino a 6 punti':'')
+    +'. Non conteggiati: \u00abpower word\u00bb (Rank Math riconosce quasi solo termini inglesi) e indice dei contenuti.</div>';
+}
+
+/* ---------- composizione contenuto ---------- */
+function paraHTML(p){
+  let html='<p style="text-align: '+p.align+';">',open=false,italic=false;
+  const openSpan=()=>{html+=SP;open=true;};
+  const closeSpan=()=>{if(open){html+='</span>';open=false;}};
+  p.runs.forEach(r=>{
+    const t=esc(r.t).replace(/\n/g,'<br />');if(!t)return;
+    if(r.i!==italic){closeSpan();if(italic)html+='</i>';if(r.i)html+='<i>';italic=r.i;}
+    if(!open)openSpan();
+    html+=r.b?'<b>'+t+'</b>':t;
+  });
+  closeSpan();if(italic)html+='</i>';
+  return html+'</p>';
+}
+function figureHTML(m,film,reg){
+  const cap=esc(film+' di '+reg);
+  return '<figure id="attachment_'+m.id+'" class="wp-caption aligncenter" style="width: '+m.width+'px"><img class="size-large wp-image-'+m.id+'" src="'+m.src+'" alt="'+cap+'" width="'+m.width+'" height="'+m.height+'" /><figcaption class="wp-caption-text">'+cap+'</figcaption></figure>';
+}
+function buildContent(media2){
+  const film=$('film').value.trim(),reg=$('regista').value.trim();
+  const p1=state.paras.slice(0,state.split+1).map(paraHTML).join('\n');
+  let p2=state.paras.slice(state.split+1).map(paraHTML).join('\n');
+  const anno=$('anno').value.trim(),dur=$('durata').value.trim(),imdb=$('imdb').value.trim(),cast=$('cast').value.trim();
+  const mode=$('schedaMode').value;
+  const sty=mode==='discreta'?' style="font-size: 15px; color: #8a8a8a;"':'';
+  const pst=mode==='discreta'?'text-align: left; font-size: 14px; color: #8a8a8a;':'text-align: left;';
+  const h3='<h3'+sty+'>Scheda tecnica di '+esc(film)+'</h3>';
+  let body='<p style="'+pst+'"><i>'+SP
+    +(imdb?'<a href="'+imdb+'" target="_blank" rel="noopener">'+esc(film)+'</a>':esc(film))
+    +'</span></i>'+SP+' ('+[$('paese').value.trim(),anno,dur].filter(Boolean).join(', ')+') – Regia: '+esc(reg)+'.'
+    +(cast?' Interpreti: '+esc(cast)+'.':'')+'</span></p>';
+  const la=[[$('la1u').value.trim(),$('la1t').value.trim()],[$('la2u').value.trim(),$('la2t').value.trim()]].filter(x=>x[0]);
+  if(la.length){body+='\n<p style="'+pst+'">'+SP+'Leggi anche: </span>'
+    +la.map(x=>'<a href="'+x[0]+'">'+SP+esc(x[1]||x[0])+'</span></a>').join(SP+'; </span>')+SP+'.</span></p>';}
+  const scheda=mode==='richiudibile'
+    ?'\n<details><summary>'+h3.replace('<h3>','<h3 style="display: inline;">')+'</summary>\n'+body+'\n</details>'
+    :'\n'+h3+'\n'+body;
+  const tr=$('trailer').value.trim();
+  if(media2&&!tr)p2=figureHTML(media2,film,reg)+'\n'+p2;
+  else if(media2&&tr){
+    const arr=state.paras.slice(state.split+1);const mid=Math.ceil(arr.length/2);
+    p2=arr.slice(0,mid).map(paraHTML).join('\n')+'\n'+figureHTML(media2,film,reg)+'\n'+arr.slice(mid).map(paraHTML).join('\n');}
+  /* stessa struttura degli articoli pubblicati: blocco 1 | container 2 = [colonna trailer] + colonna testo */
+  return TPL.A+'\n'+p1+'\n'+TPL.B+(tr?TPL.YT.replace('{{YT}}',tr):'')+TPL.C+'\n'+p2+scheda+'\n'+TPL.D;
+}
+
+/* ---------- creazione ---------- */
+const L=t=>{const e=$('log');e.style.display='block';e.textContent+=t+'\n';e.scrollTop=1e9;};
+/* Cerca il termine (tag, regista, interprete) già presente sul sito prima di crearlo:
+   per slug, per nome intero e per cognome, confrontando i nomi senza accenti, maiuscole,
+   trattini o ordine nome/cognome. Crea un termine nuovo solo se non ne trova nessuno. */
+const termCache={};
+async function term(base,name){
+  name=name.replace(/\s+/g,' ').trim();
+  const key=base+'|'+normName(name);
+  if(termCache[key])return termCache[key];
+  const look=async q=>{try{const r=await api('/wp/v2/'+base+'?'+q+'&per_page=100&_fields=id,name,slug');
+    return (r||[]).find(t=>sameName(decodeEnt(t.name),name))||null;}catch(e){return null;}};
+  let t=await look('slug='+encodeURIComponent(slugify(name)));
+  if(!t)t=await look('search='+encodeURIComponent(name));
+  if(!t){
+    const sur=name.split(' ').pop();
+    if(sur.length>=3){
+      t=await look('search='+encodeURIComponent(sur));
+      const sur2=sur.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      if(!t&&sur2!==sur)t=await look('search='+encodeURIComponent(sur2));
+    }
+  }
+  let res;
+  if(t)res={id:t.id,name:decodeEnt(t.name),existing:true};
+  else{
+    try{
+      const n=await api('/wp/v2/'+base,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name})});
+      res={id:n.id,name:n.name,existing:false};
+    }catch(e){
+      const tid=e.data&&(e.data.term_id||e.data.resource_id);
+      if(e.code==='term_exists'&&tid)res={id:tid,name,existing:true};else throw e;
+    }
+  }
+  termCache[key]=res;return res;
+}
+async function upload(media,slugBase,cap){
+  const site=$('site').value.replace(/\/+$/,'');
+  const r=await fetch(site+'/wp-json/wp/v2/media',{method:'POST',headers:{
+    Authorization:'Basic '+state.auth,'Content-Type':'image/jpeg',
+    'Content-Disposition':'attachment; filename="'+slugBase+'.jpg"'},body:media.blob});
+  if(!r.ok)throw new Error('upload immagine: HTTP '+r.status);
+  const j=await r.json();
+  await api('/wp/v2/media/'+j.id,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({alt_text:cap,title:cap,caption:cap})});
+  const s=(j.media_details&&j.media_details.sizes&&(j.media_details.sizes.large||j.media_details.sizes.full))||null;
+  return {id:j.id,src:s?s.source_url:j.source_url,width:s?s.width:media.w,height:s?s.height:media.h};
+}
+/* ---------- bozze esistenti ---------- */
+async function loadDrafts(){
+  const sel=$('selDraft');sel.innerHTML='<option>carico…</option>';sel.style.display='';$('destHint').style.display='block';
+  try{
+    const ds=await api('/wp/v2/posts?status=draft&author='+state.me.id+'&per_page=20&orderby=modified&_fields=id,title,modified');
+    const dec=s=>{const t=document.createElement('textarea');t.innerHTML=s;return t.value;};
+    sel.innerHTML=(ds&&ds.length)?ds.map(d=>'<option value="'+d.id+'">#'+d.id+' · '+dec((d.title&&d.title.rendered)||'(senza titolo)')+' · mod. '+d.modified.slice(0,10)+'</option>').join(''):'<option value="">nessuna tua bozza trovata</option>';
+  }catch(e){sel.innerHTML='<option value="">errore: '+e.message+'</option>';}
+}
+$('dest').onchange=()=>{
+  if($('dest').value==='upd'){
+    if(!state.auth){msg('mGo','err','Prima verifica l’accesso (passo 1).');$('dest').value='new';return;}
+    loadDrafts();
+  }else{$('selDraft').style.display='none';$('destHint').style.display='none';}
+};
+
+/* ---------- salvataggio del lavoro in corso (senza password) ---------- */
+const WKEY='sp_pub_work';
+const WFIELDS=['site','user','gdoc','film','regista','paese','anno','durata','cast','imdb','trailer','trailerIt','trailerOrig','trailerSel','schedaMode','slug','la1u','la1t','la2u','la2t','kw','seoTitle','metaDesc','excerpt'];
+function saveWork(){try{
+  const o={t:Date.now(),f:{},tou:{},paste:$('paste').innerHTML,paras:state.paras,split:state.split};
+  WFIELDS.forEach(id=>{o.f[id]=$(id).value;if($(id).dataset.touched)o.tou[id]=1;});
+  localStorage.setItem(WKEY,JSON.stringify(o));
+}catch(e){}}
+let wkT;document.addEventListener('input',()=>{clearTimeout(wkT);wkT=setTimeout(saveWork,800);});
+(function restoreWork(){try{
+  const raw=localStorage.getItem(WKEY);if(!raw)return;
+  const o=JSON.parse(raw);if(!o||!o.t)return;
+  const bar=document.createElement('div');bar.className='msg warn';bar.style.display='block';bar.style.margin='0 0 16px';
+  bar.innerHTML='Trovato un lavoro in corso del '+new Date(o.t).toLocaleString('it-IT')+'. '
+    +'<button class="sec" id="wkY" style="margin:0 6px;padding:5px 12px">Riprendi</button>'
+    +'<button class="sec" id="wkN" style="margin:0;padding:5px 12px">Scarta</button>';
+  document.querySelector('.wrap').prepend(bar);
+  bar.querySelector('#wkN').onclick=()=>{try{localStorage.removeItem(WKEY)}catch(e){}bar.remove();};
+  bar.querySelector('#wkY').onclick=()=>{
+    for(const id in o.f){const el=$(id);if(el){el.value=o.f[id];if(o.tou[id])el.dataset.touched=1;}}
+    $('paste').innerHTML=o.paste||'';if(o.f.trailerSel)$('trailerSel').dataset.touched=1;
+    state.paras=o.paras||[];state.split=o.split||0;
+    if(state.paras.length)renderParas();
+    syncMeta();if(state.paras.length)$('btnCheck').click();
+    bar.remove();
+    msg('mParse','warn','Lavoro ripristinato. Reinserisci l’Application Password al passo 1; le immagini non si conservano tra le sessioni: premi «Compila automaticamente» per riavere le proposte o ricaricale.');
+  };
+}catch(e){}})();
+
+$('btnGo').onclick=async()=>{
+  $('log').textContent='';$('final').innerHTML='';
+  const manual=[];
+  try{
+    if(!state.auth)throw new Error('prima verifica l’accesso (passo 1)');
+    if(!state.paras.length)throw new Error('prima leggi il testo (passo 2)');
+    const film=$('film').value.trim(),reg=$('regista').value.trim();
+    if(!film||!reg)throw new Error('indica titolo del film e regista (passo 3)');
+    if(!state.img1)throw new Error('serve l’immagine in evidenza (passo 5)');
+    const bad=checks().filter(x=>!x[1]);
+    if(bad.length&&!confirm('Verifiche non superate:\n– '+bad.map(x=>x[0]).join('\n– ')+'\n\nCreare comunque la bozza?'))return;
+    const cap=film+' di '+reg;
+    const updId=$('dest').value==='upd'?(parseInt($('selDraft').value)||0):0;
+    if($('dest').value==='upd'&&!updId)throw new Error('scegli quale bozza aggiornare');
+
+    if(!updId){
+    L('Controllo che la recensione non esista già…');
+    try{
+      const dec0=s=>{const t=document.createElement('textarea');t.innerHTML=s;return t.value;};
+      const dup=await api('/wp/v2/posts?status=publish,draft,pending&search='+encodeURIComponent(film)+'&per_page=5&_fields=title,link,status');
+      const hitd=(dup||[]).find(p=>dec0(p.title.rendered).toLowerCase().startsWith(film.toLowerCase()));
+      if(hitd&&!confirm('Sul sito esiste già «'+dec0(hitd.title.rendered)+'» (stato: '+hitd.status+').\nCreare comunque una nuova bozza?'))
+        {msg('mGo','warn','Creazione annullata: esiste già un articolo su questo film.');return;}
+    }catch(e){}
+    }
+    L('Categoria «Recensioni»…');
+    const cats=await api('/wp/v2/categories?search=Recensioni');
+    const cat=cats.find(c=>c.name==='Recensioni');if(!cat)throw new Error('categoria «Recensioni» non trovata');
+
+    const newTerms=[];
+    const tg=[await term('tags',film),await term('tags',reg)];
+    tg.forEach(t=>{if(!t.existing)newTerms.push('tag \u00ab'+t.name+'\u00bb');});
+    L('Tag: '+tg.map(t=>t.name+(t.existing?' (gi\u00e0 presente)':' (nuovo)')).join(', '));
+    const tags=tg.map(t=>t.id);
+
+    const extra={};
+    for(const [k,label] of [['director','Regista'],['starring','Interpreti']]){
+      if(!state.tax[k]){manual.push(label+': da selezionare/aggiungere a mano nel box di WordPress');continue;}
+      try{
+        const names=k==='director'?[reg]:$('cast').value.split(',').map(s=>s.trim()).filter(Boolean);
+        if(!names.length){manual.push(label+': nessun nome indicato');continue;}
+        extra[state.tax[k]]=[];const got=[];
+        for(const n of names){const t=await term(state.tax[k],n);extra[state.tax[k]].push(t.id);got.push(t);if(!t.existing)newTerms.push(label.toLowerCase()+' \u00ab'+t.name+'\u00bb');}
+        L(label+': '+got.map(t=>t.name+(t.existing?' (gi\u00e0 presente)':' (nuovo)')).join(', '));
+      }catch(e){manual.push(label+': impossibile via API ('+e.message+') — aggiungi a mano');}
+    }
+
+    L('Carico immagine in evidenza…');
+    const m1=await upload(state.img1,$('slug').value||slugify(cap),cap);
+    let m2=null;
+    if(state.img2){L('Carico seconda immagine…');m2=await upload(state.img2,($('slug').value||slugify(cap))+'-2',cap);}
+
+    L(updId?'Compongo l’articolo e aggiorno la bozza #'+updId+'…':'Compongo l’articolo e creo la bozza…');
+    const body={status:'draft',title:cap,slug:$('slug').value||slugify(cap),
+      excerpt:$('excerpt').value.trim(),content:buildContent(m2),
+      categories:[cat.id],tags,featured_media:m1.id,
+      meta:{rank_math_focus_keyword:$('kw').value.trim(),
+            rank_math_title:$('seoTitle').value.trim()+' %sep% %sitename%',
+            rank_math_description:$('metaDesc').value.trim()}};
+    Object.assign(body,extra);
+    const post=await api('/wp/v2/posts'+(updId?'/'+updId:''),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+
+    /* Rank Math: 1) meta già inviati col post; 2) API propria di Rank Math; 3) valori da copiare */
+    const rmVals={kw:$('kw').value.trim(),title:$('seoTitle').value.trim(),desc:$('metaDesc').value.trim()};
+    let rmOk=false;
+    try{const chk=(await api('/wp/v2/posts/'+post.id+'?context=edit')).meta||{};rmOk=!!chk.rank_math_focus_keyword;}catch(e){}
+    if(!rmOk){
+      L('Rank Math: provo la sua API interna…');
+      try{
+        await api('/rankmath/v1/updateMeta',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({objectID:post.id,objectType:'post',
+            meta:{rank_math_focus_keyword:rmVals.kw,rank_math_title:rmVals.title+' %sep% %sitename%',rank_math_description:rmVals.desc}})});
+        rmOk=true;L('Rank Math: impostato via API interna.');
+        manual.push('Rank Math: parola chiave, titolo e descrizione sono stati inviati — aprendo la bozza verifica che il riquadro Rank Math li mostri');
+      }catch(e){L('Rank Math: API interna non disponibile ('+e.message+')');}
+    }
+    let rmHTML='';
+    if(!rmOk){
+      rmHTML='<div class="rmfix"><b>Rank Math — incolla questi valori nel riquadro della bozza:</b>'
+        +[['Parola chiave',rmVals.kw],['Titolo SEO',rmVals.title],['Meta descrizione',rmVals.desc]]
+        .map(x=>'<div class="rmrow"><span>'+x[0]+'</span><input readonly value="'+x[1].replace(/"/g,'&quot;')+'"><button class="sec cp" type="button">Copia</button></div>').join('')
+        +'</div>';
+    }
+    if(newTerms.length)manual.push('Creati sul sito perch\u00e9 non ancora presenti: '+newTerms.join(', ')+'. Se uno di questi esisteva gi\u00e0 scritto diversamente, correggilo nella bozza');
+    if(!$('trailer').value.trim())manual.push('Trailer: quando disponibile, aggiungi l’elemento YouTube tra i due blocchi');
+    if(state.img2auto)manual.push('La seconda immagine nel testo è stata scelta in automatico tra le proposte: controlla che sia adatta');
+    if(state.img1label.startsWith('Locandina'))manual.push('Come immagine in evidenza è stata scelta una locandina: valuta se un fotogramma non renda meglio in anteprima');
+    manual.push('Aprendo la bozza, nella scheda Visuale dell\u2019editor compaiono righe come [fusion_builder\u2026]: sono la struttura del tema, non eliminarle. Per ritocchi al testo usa la scheda Codice o il Live Builder');
+    manual.push('Riassunto e meta descrizione sono generati con regole automatiche, non da un’IA: rileggili e ritoccali se suonano male. Controlla poi il punteggio Rank Math (obiettivo 70+, minimo 55) e l’anteprima, e lascia in bozza per la revisione');
+
+    const edit=$('site').value.replace(/\/+$/,'')+'/wp-admin/post.php?post='+post.id+'&action=edit';
+    L((updId?'Aggiornata':'Fatto')+'. Bozza #'+post.id);
+    msg('mGo','ok',updId?'Bozza #'+updId+' aggiornata (le versioni precedenti restano nelle revisioni di WordPress).':'Bozza creata (non pubblicata).');done(7);try{localStorage.removeItem(WKEY)}catch(e){}
+    state.created={post:post.id,media:[m1.id].concat(m2?[m2.id]:[])};
+    $('final').innerHTML='<p><a href="'+edit+'" target="_blank">Apri la bozza in WordPress →</a></p>'+rmHTML
+      +'<b>Da completare a mano:</b><ul class="todo">'+manual.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'
+      +'<button id="btnDel" type="button">Elimina questa bozza (per le prove)</button>';
+    $('final').querySelectorAll('.cp').forEach(b=>{b.onclick=()=>{const inp=b.previousElementSibling;inp.select();
+      navigator.clipboard.writeText(inp.value).then(()=>{b.textContent='Copiato';setTimeout(()=>b.textContent='Copia',1500);})
+      .catch(()=>{document.execCommand('copy');b.textContent='Copiato';setTimeout(()=>b.textContent='Copia',1500);});};});
+    const bd=document.getElementById('btnDel');
+    bd.onclick=async()=>{
+      if(!confirm('Spostare la bozza #'+state.created.post+' nel cestino ed eliminare le immagini appena caricate?'))return;
+      bd.disabled=true;
+      try{
+        await api('/wp/v2/posts/'+state.created.post,{method:'DELETE'});
+        for(const id of state.created.media){try{await api('/wp/v2/media/'+id+'?force=true',{method:'DELETE'});}catch(e){}}
+        msg('mGo','ok','Bozza spostata nel cestino (recuperabile da WordPress) e immagini eliminate. Puoi rifare la prova.');
+        $('final').innerHTML='';done(7,false);
+      }catch(e){bd.disabled=false;msg('mGo','err','Eliminazione non riuscita: '+e.message);}
+    };
+  }catch(e){
+    L('ERRORE: '+e.message);
+    msg('mGo','err',e.message);
+  }
+};
+</script>
+</body>
+</html>
